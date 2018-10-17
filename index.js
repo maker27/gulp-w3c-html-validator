@@ -27,7 +27,7 @@ function handleMessages(file, messages, options) {
 
 	messages.forEach(function (message) {
 
-		// allows you to intercept info, warnings or errors, using `options.verifyMessage` methed, returning false will skip the log output 
+		// allows you to intercept info, warnings or errors, using `options.verifyMessage` methed, returning false will skip the log output
 		if(options.verifyMessage && !options.verifyMessage(message.type, message.message)) return;
 
 		if (message.type === 'info' && !options.showInfo) {
@@ -111,7 +111,9 @@ module.exports = function (options) {
 		w3cjs.validate({
 			proxy: options.proxy ? options.proxy : undefined,
 			input: file.contents,
-			callback: function (res) {
+			callback: function (error, res) {
+				if (error)
+					console.log(error);
 				file.w3cjs = {
 					success: handleMessages(file, res.messages, options),
 					messages: res.messages
