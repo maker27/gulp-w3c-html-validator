@@ -82,7 +82,7 @@ function reporter() {
 	return through.obj(function(file, enc, cb) {
         cb(null, file);
         if (file.w3cjs && !file.w3cjs.success) {
-            throw new gutil.PluginError('gulp-w3cjs', 'HTML validation error(s) found');
+            throw new gutil.PluginError('gulp-w3c-html-validator', 'HTML validation error(s) found');
         }
     });
 }
@@ -105,7 +105,7 @@ module.exports = function (options) {
 		}
 
 		if (file.isStream()) {
-			return callback(new gutil.PluginError('gulp-w3cjs', 'Streaming not supported'));
+			return callback(new gutil.PluginError('gulp-w3c-html-validator', 'Streaming not supported'));
 		}
 
 		w3cjs.validate({

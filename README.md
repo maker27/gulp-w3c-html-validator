@@ -1,19 +1,19 @@
-# gulp-w3cjs [![NPM version][npm-image]][npm-url] [![Build Status][travis-image]][travis-url] [![Dependency Status][depstat-image]][depstat-url]
+# gulp-w3c-html-validator [![NPM version][npm-image]][npm-url] [![Build Status][travis-image]][travis-url] [![Dependency Status][depstat-image]][depstat-url]
 
 > [w3cjs](https://github.com/thomasdavis/w3cjs) wrapper for [gulp](https://github.com/wearefractal/gulp) to validate your HTML
 
 ## Usage
 
-First, install `gulp-w3cjs` as a development dependency:
+First, install `gulp-w3c-html-validator` as a development dependency:
 
 ```shell
-npm install --save-dev gulp-w3cjs
+npm install --save-dev gulp-w3c-html-validator
 ```
 
 Then, add it to your `gulpfile.js`:
 
 ```javascript
-var w3cjs = require('gulp-w3cjs');
+var w3cjs = require('gulp-w3c-html-validator');
 
 gulp.task('w3cjs', function () {
 	gulp.src('src/*.html')
@@ -29,7 +29,7 @@ The results are also added onto each file object under `w3cjs`, containing `succ
 **Example usage**
 
 ```javascript
-var w3cjs = require('gulp-w3cjs');
+var w3cjs = require('gulp-w3c-html-validator');
 var through2 = require('through2');
 
 gulp.task('example', function () {
@@ -81,7 +81,7 @@ gulp.src('index.html')
 
 		// prevent logging error message
 		if(message.indexOf('Element “style” not allowed as child of element') === 0) return false;
-		
+
 		// allow message to pass through
 		return true;
 	}
@@ -97,11 +97,11 @@ Same as options.url. SEt's the URL to the w3c validator.
 
 [MIT License](http://en.wikipedia.org/wiki/MIT_License)
 
-[npm-url]: https://npmjs.org/package/gulp-w3cjs
-[npm-image]: https://badge.fury.io/js/gulp-w3cjs.png
+[npm-url]: https://npmjs.org/package/gulp-w3c-html-validator
+[npm-image]: https://badge.fury.io/js/gulp-w3c-html-validator.png
 
-[travis-url]: http://travis-ci.org/callumacrae/gulp-w3cjs
-[travis-image]: https://secure.travis-ci.org/callumacrae/gulp-w3cjs.png?branch=master
+[travis-url]: http://travis-ci.org/center-key/gulp-w3c-html-validator
+[travis-image]: https://secure.travis-ci.org/center-key/gulp-w3c-html-validator.png?branch=master
 
-[depstat-url]: https://david-dm.org/callumacrae/gulp-w3cjs
-[depstat-image]: https://david-dm.org/callumacrae/gulp-w3cjs.png
+[depstat-url]: https://david-dm.org/center-key/gulp-w3c-html-validator
+[depstat-image]: https://david-dm.org/center-key/gulp-w3c-html-validator.png

@@ -1,6 +1,6 @@
 {
-  "name": "gulp-w3cjs",
-  "version": "1.3.0",
+  "name": "gulp-w3c-html-validator",
+  "version": "1.4.0",
   "description": "A Gulp wrapper for w3cjs to validate your HTML",
   "keywords": [
     "gulpplugin",
@@ -9,17 +9,19 @@
     "validation",
     "w3c"
   ],
-  "homepage": "https://github.com/callumacrae/gulp-w3cjs",
-  "bugs": "https://github.com/callumacrae/gulp-w3cjs/issues",
+  "homepage": "https://github.com/center-key/gulp-w3c-html-validator",
+  "bugs": "https://github.com/center-key/gulp-w3c-html-validator/issues",
   "author": {
     "name": "Callum Macrae",
-    "email": "callum@macr.ae",
     "url": "https://github.com/callumacrae"
   },
+  "contributors": [
+    "Dem Pilafian (https://twitter.com/dempilafian)"
+  ],
   "main": "./index.js",
   "repository": {
     "type": "git",
-    "url": "git://github.com/callumacrae/gulp-w3cjs.git"
+    "url": "git://github.com/center-key/gulp-w3c-html-validator.git"
   },
   "scripts": {
     "test": "mocha"

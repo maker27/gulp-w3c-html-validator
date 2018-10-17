@@ -7,7 +7,7 @@ var should = require('should');
 var gutil = require('gulp-util');
 var w3cjs = require('../');
 
-describe('gulp-w3cjs', function () {
+describe('gulp-w3c-html-validator', function () {
 	describe('w3cjs()', function () {
 		it('should pass valid files', function (done) {
 			var a = 0;
@@ -72,7 +72,7 @@ describe('gulp-w3cjs', function () {
 			stream.write(fakeFile);
 			stream.end();
 		});
-		
+
 		it('should allow a custom error to be ignored when `options.verifyMessage` used', function(done) {
 			var a = 0;
 
@@ -89,7 +89,7 @@ describe('gulp-w3cjs', function () {
 					// prevent logging error message
 					if(message.indexOf('End tag for  “body” seen, but') === 0) return false;
 					if(message.indexOf('Unclosed element “h1”.') === 0) return false;
-					
+
 					// allow message to pass through
 					return true;
 				}
