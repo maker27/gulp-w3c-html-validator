@@ -95,7 +95,7 @@ Same as options.url. SEt's the URL to the w3c validator.
 
 ## License
 
-[MIT License](http://en.wikipedia.org/wiki/MIT_License)
+[MIT License](LICENSE.txt)
 
 [npm-url]: https://npmjs.org/package/gulp-w3c-html-validator
 [npm-image]: https://badge.fury.io/js/gulp-w3c-html-validator.png

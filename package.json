@@ -1,6 +1,7 @@
 {
   "name": "gulp-w3c-html-validator",
   "version": "1.4.0",
+  "license": "MIT",
   "description": "A Gulp wrapper for w3cjs to validate your HTML",
   "keywords": [
     "gulpplugin",
