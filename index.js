@@ -1,4 +1,7 @@
-'use strict';
+// gulp-w3c-html-validator
+// Gulp plugin to validate HTML using the W3C Markup Validation Service
+// https://github.com/center-key/gulp-w3c-html-validator
+// MIT License
 
 var through = require('through2');
 var w3cjs = require('w3cjs');

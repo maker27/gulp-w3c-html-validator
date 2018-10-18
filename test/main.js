@@ -1,5 +1,4 @@
-/* global describe, it */
-'use strict';
+// Mocha Specification Cases
 
 var fs = require('fs');
 var should = require('should');
@@ -107,7 +106,7 @@ describe('gulp-w3c-html-validator', function () {
 
 			stream.write(fakeFile);
 			stream.end();
-		})
+		});
 	});
 
 	describe('w3cjs.setW3cCheckUrl()', function () {

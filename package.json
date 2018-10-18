@@ -2,7 +2,7 @@
   "name": "gulp-w3c-html-validator",
   "version": "1.4.1",
   "license": "MIT",
-  "description": "A Gulp wrapper for w3cjs to validate your HTML",
+  "description": "Gulp plugin to validate HTML using the W3C Markup Validation Service",
   "keywords": [
     "gulp",
     "gulp-plugin",
@@ -27,8 +27,17 @@
     "type": "git",
     "url": "git://github.com/center-key/gulp-w3c-html-validator.git"
   },
+  "jshintConfig": {
+    "esversion": 6,
+    "strict": "implied",
+    "undef": true,
+    "unused": true,
+    "node": true,
+    "mocha": true
+  },
   "scripts": {
-    "test": "mocha"
+    "pretest": "jshint *.js test/*.js",
+    "test": "mocha test/main.js"
   },
   "dependencies": {
     "gulp-util": "^3.0.5",
@@ -36,6 +45,7 @@
     "w3cjs": "^0.4.0"
   },
   "devDependencies": {
+    "jshint": "^2.9.6",
     "mocha": "^5.2.0",
     "should": "^13.2.3"
   },
