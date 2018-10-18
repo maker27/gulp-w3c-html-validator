@@ -1,107 +1,91 @@
-# gulp-w3c-html-validator [![NPM version][npm-image]][npm-url] [![Build Status][travis-image]][travis-url] [![Dependency Status][depstat-image]][depstat-url]
+# gulp-w3c-html-validator
+<img src=https://centerkey.com/graphics/center-key-logo.svg align=right width=200 alt=logo>
 
-> [w3cjs](https://github.com/thomasdavis/w3cjs) wrapper for [gulp](https://github.com/wearefractal/gulp) to validate your HTML
+_Gulp plugin to validate HTML using the W3C Markup Validation Service_
 
-## Usage
+[![License:MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/center-key/gulp-w3c-html-validator/blob/master/LICENSE.txt)
+&nbsp;
+[![npm](https://img.shields.io/npm/v/gulp-w3c-html-validator.svg)](https://www.npmjs.com/package/gulp-w3c-html-validator)
+&nbsp;
+[![Dependencies Status](https://david-dm.org/center-key/gulp-w3c-html-validator/status.svg)](https://david-dm.org/center-key/gulp-w3c-html-validator)
+&nbsp;
+[![Vulnerabilities](https://snyk.io/test/github/center-key/gulp-w3c-html-validator/badge.svg)](https://snyk.io/test/github/center-key/gulp-w3c-html-validator)
+&nbsp;
+[![Build](https://travis-ci.org/center-key/gulp-w3c-html-validator.svg)](https://travis-ci.org/center-key/gulp-w3c-html-validator)
 
-First, install `gulp-w3c-html-validator` as a development dependency:
+This Gulp plugin is a wrapper for [w3cjs](https://github.com/thomasdavis/w3cjs) (_"A node.js library for testing files or URLs against the W3C HTML validator."_)
 
+## 1) Setup
+Install module into your project:
 ```shell
-npm install --save-dev gulp-w3c-html-validator
+$ npm install gulp-w3c-html-validator --save-dev
 ```
 
-Then, add it to your `gulpfile.js`:
-
+## 2) Define task
+Create task in **gulpfile.js**:
 ```javascript
-var w3cjs = require('gulp-w3c-html-validator');
+const htmlValidator = require('gulp-w3c-html-validator');
 
-gulp.task('w3cjs', function () {
-	gulp.src('src/*.html')
-		.pipe(w3cjs())
-		.pipe(w3cjs.reporter());
-});
+function validateHtml() {
+   return gulp.src('**/*.html')
+      .pipe(htmlValidator())
+      .pipe(htmlValidator.reporter());
+      }
+
+gulp.task('validate-html', validateHtml);
 ```
 
-### Custom Reporting
+## 3) Custom Reporting
+The results are also added onto each file object under `w3cjs`, containing `success` (Boolean)
+and `messages` (Array).
 
-The results are also added onto each file object under `w3cjs`, containing `success` (Boolean) and `messages` (Array).
-
-**Example usage**
-
+### Example usage
 ```javascript
-var w3cjs = require('gulp-w3c-html-validator');
-var through2 = require('through2');
+const htmlValidator = require('gulp-w3c-html-validator');
+const through2 =      require('through2');
 
-gulp.task('example', function () {
-	gulp.src('src/*.html')
-		.pipe(w3cjs())
-		.pipe(through2.obj(function(file, enc, cb){
-			cb(null, file);
-			if (!file.w3cjs.success){
-				throw new Error('HTML validation error(s) found');
-			}
-		}));
-});
+function validateHtml() {
+   function handleFile(file, encoding, callback) {
+      callback(null, file);
+      if (!file.w3cjs.success) {
+         throw new Error('HTML validation error(s) found');
+         }
+      }
+   return gulp.src('**/*.html')
+      .pipe(htmlValidator())
+      .pipe(through2.obj(handleFile));
+      }
+
+gulp.task('validate-html', validateHtml);
 ```
 
-**Example output**
-
+### Example output
 ```shell
 HTML Error: index.html Line 5, Column 19: Element title must not be empty.
-    <title></title>
-
+   <title></title>
 .../gulpfile.js:11
-                                throw new Error('HTML validation error(s) found');
-                                      ^
+         throw new Error('HTML validation error(s) found');
+               ^
 Error: HTML validation error(s) found
 ```
 
-## API
+## 4) Options
 
-### w3cjs(options)
+### options.url
+URL to the W3C validator. Use if you want to use a local validator.
 
-#### options.url
+### options.proxy
+HTTP address of the proxy server if you are running behind a firewall, e.g. `http://proxy:8080`
 
-URL to the w3c validator. Use if you want to use a local validator. This is the
-same thing as `w3cjs.setW3cCheckUrl()`.
-
-#### options.proxy
-
-Http address of the proxy server if you are running behind a firewall, e.g.  `http://proxy:8080`
-
-_`options.doctype` and `options.charset` were dropped in 1.0.0. Use 0.3.0 if you need them._
-
-#### options.verifyMessage
-
-Allows you to intercept info, warnings or errors, using `options.verifyMessage` methed, returning false will skip the log output. Example usage:
-```js
-gulp.src('index.html')
-.pipe(w3cjs({
-	verifyMessage: function(type, message) {
-
-		// prevent logging error message
-		if(message.indexOf('Element “style” not allowed as child of element') === 0) return false;
-
-		// allow message to pass through
-		return true;
-	}
-}))
-.pipe(w3cjs.reporter())
+### options.verifyMessage
+Function to determine if a warning or error should be allowed.  Return `true` to allow and `false`
+to skip.  Example usage:
+```javascript
+   function ignoreDuplicateIds(type, message) { return !/^Duplicate ID/.test(message); }
+   return gulp.src('**/*.html')
+      .pipe(htmlValidator({ verifyMessage: ignoreDuplicateIds }))
+      .pipe(htmlValidator.reporter());
 ```
 
-### w3cjs.setW3cCheckUrl(url)
-
-Same as options.url. SEt's the URL to the w3c validator.
-
-## License
-
+---
 [MIT License](LICENSE.txt)
-
-[npm-url]: https://npmjs.org/package/gulp-w3c-html-validator
-[npm-image]: https://badge.fury.io/js/gulp-w3c-html-validator.png
-
-[travis-url]: http://travis-ci.org/center-key/gulp-w3c-html-validator
-[travis-image]: https://secure.travis-ci.org/center-key/gulp-w3c-html-validator.png?branch=master
-
-[depstat-url]: https://david-dm.org/center-key/gulp-w3c-html-validator
-[depstat-image]: https://david-dm.org/center-key/gulp-w3c-html-validator.png
