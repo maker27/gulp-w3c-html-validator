@@ -92,12 +92,12 @@ Example usage:
 // Task
 function validateHtml() {
    function ignoreDuplicateIds(type, message) {
-		return !/^Duplicate ID/.test(message);
-		}
+      return !/^Duplicate ID/.test(message);
+      }
    return gulp.src('**/*.html')
       .pipe(htmlValidator({ verifyMessage: ignoreDuplicateIds }))
       .pipe(htmlValidator.reporter());
-	}
+   }
 ```
 
 ---
