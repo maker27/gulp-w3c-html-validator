@@ -22,16 +22,19 @@ $ npm install gulp-w3c-html-validator --save-dev
 ```
 
 ## 2) Define task
-Create task in **gulpfile.js**:
+Create a task in your **gulpfile.js**:
 ```javascript
+// Import
 const htmlValidator = require('gulp-w3c-html-validator');
 
+// Task
 function validateHtml() {
    return gulp.src('**/*.html')
       .pipe(htmlValidator())
       .pipe(htmlValidator.reporter());
       }
 
+// Gulp
 gulp.task('validate-html', validateHtml);
 ```
 
@@ -41,9 +44,11 @@ and `messages` (Array).
 
 ### Example usage
 ```javascript
+// Import
 const htmlValidator = require('gulp-w3c-html-validator');
 const through2 =      require('through2');
 
+// Task
 function validateHtml() {
    function handleFile(file, encoding, callback) {
       callback(null, file);
@@ -56,6 +61,7 @@ function validateHtml() {
       .pipe(through2.obj(handleFile));
       }
 
+// Gulp
 gulp.task('validate-html', validateHtml);
 ```
 
@@ -79,12 +85,19 @@ HTTP address of the proxy server if you are running behind a firewall, e.g. `htt
 
 ### options.verifyMessage
 Function to determine if a warning or error should be allowed.  Return `true` to allow and `false`
-to skip.  Example usage:
+to skip.
+
+Example usage:
 ```javascript
-   function ignoreDuplicateIds(type, message) { return !/^Duplicate ID/.test(message); }
+// Task
+function validateHtml() {
+   function ignoreDuplicateIds(type, message) {
+		return !/^Duplicate ID/.test(message);
+		}
    return gulp.src('**/*.html')
       .pipe(htmlValidator({ verifyMessage: ignoreDuplicateIds }))
       .pipe(htmlValidator.reporter());
+	}
 ```
 
 ---
