@@ -27,15 +27,17 @@ Create a task in your **gulpfile.js**:
 // Import
 const htmlValidator = require('gulp-w3c-html-validator');
 
-// Task
-function validateHtml() {
-   return gulp.src('**/*.html')
-      .pipe(htmlValidator())
-      .pipe(htmlValidator.reporter());
+// Tasks
+const task = {
+   validateHtml: function() {
+      return gulp.src('**/*.html')
+         .pipe(htmlValidator())
+         .pipe(htmlValidator.reporter());
       }
+   };
 
 // Gulp
-gulp.task('validate-html', validateHtml);
+gulp.task('validate-html', task.validateHtml);
 ```
 
 ## 3) Custom Reporting
@@ -48,21 +50,22 @@ and `messages` (Array).
 const htmlValidator = require('gulp-w3c-html-validator');
 const through2 =      require('through2');
 
-// Task
-function validateHtml() {
-   function handleFile(file, encoding, callback) {
-      callback(null, file);
-      if (!file.w3cjs.success) {
-         throw new Error('HTML validation error(s) found');
+// Tasks
+const task = {
+   validateHtml: function() {
+      function handleFile(file, encoding, callback) {
+         callback(null, file);
+         if (!file.w3cjs.success)
+            throw new Error('HTML validation error(s) found');
          }
+      return gulp.src('**/*.html')
+         .pipe(htmlValidator())
+         .pipe(through2.obj(handleFile));
       }
-   return gulp.src('**/*.html')
-      .pipe(htmlValidator())
-      .pipe(through2.obj(handleFile));
-      }
+   };
 
 // Gulp
-gulp.task('validate-html', validateHtml);
+gulp.task('validate-html', task.validateHtml);
 ```
 
 ### Example output
@@ -89,15 +92,17 @@ to skip.
 
 Example usage:
 ```javascript
-// Task
-function validateHtml() {
-   function ignoreDuplicateIds(type, message) {
-      return !/^Duplicate ID/.test(message);
+// Tasks
+const task = {
+   validateHtml: function() {
+      function ignoreDuplicateIds(type, message) {
+         return !/^Duplicate ID/.test(message);
+         }
+      return gulp.src('**/*.html')
+         .pipe(htmlValidator({ verifyMessage: ignoreDuplicateIds }))
+         .pipe(htmlValidator.reporter());
       }
-   return gulp.src('**/*.html')
-      .pipe(htmlValidator({ verifyMessage: ignoreDuplicateIds }))
-      .pipe(htmlValidator.reporter());
-   }
+   };
 ```
 
 ---
