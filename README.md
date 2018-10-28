@@ -7,7 +7,7 @@ _Gulp plugin to validate HTML using the W3C Markup Validation Service_
 &nbsp;
 [![npm](https://img.shields.io/npm/v/gulp-w3c-html-validator.svg)](https://www.npmjs.com/package/gulp-w3c-html-validator)
 &nbsp;
-[![Dependencies Status](https://david-dm.org/center-key/gulp-w3c-html-validator/status.svg)](https://david-dm.org/center-key/gulp-w3c-html-validator)
+[![Dependencies](https://david-dm.org/center-key/gulp-w3c-html-validator/status.svg)](https://david-dm.org/center-key/gulp-w3c-html-validator)
 &nbsp;
 [![Vulnerabilities](https://snyk.io/test/github/center-key/gulp-w3c-html-validator/badge.svg)](https://snyk.io/test/github/center-key/gulp-w3c-html-validator)
 &nbsp;
@@ -30,7 +30,7 @@ const htmlValidator = require('gulp-w3c-html-validator');
 // Tasks
 const task = {
    validateHtml: function() {
-      return gulp.src('**/*.html')
+      return gulp.src('target/**/*.html')
          .pipe(htmlValidator())
          .pipe(htmlValidator.reporter());
       }
@@ -58,7 +58,7 @@ const task = {
          if (!file.w3cjs.success)
             throw new Error('HTML validation error(s) found');
          }
-      return gulp.src('**/*.html')
+      return gulp.src('target/**/*.html')
          .pipe(htmlValidator())
          .pipe(through2.obj(handleFile));
       }
@@ -98,7 +98,7 @@ const task = {
       function ignoreDuplicateIds(type, message) {
          return !/^Duplicate ID/.test(message);
          }
-      return gulp.src('**/*.html')
+      return gulp.src('target/**/*.html')
          .pipe(htmlValidator({ verifyMessage: ignoreDuplicateIds }))
          .pipe(htmlValidator.reporter());
       }
