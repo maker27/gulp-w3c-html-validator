@@ -12,10 +12,10 @@ describe('gulp-w3c-html-validator', function () {
          var a = 0;
 
          var fakeFile = new gutil.File({
-            path: './test/html/valid.html',
-            cwd: './test/',
-            base: './test/html/',
-            contents: fs.readFileSync('./test/html/valid.html')
+            path: 'spec/html/valid.html',
+            cwd: 'spec/',
+            base: 'spec/html/',
+            contents: fs.readFileSync('spec/html/valid.html')
          });
 
          var stream = w3cjs({showInfo: true});
@@ -26,7 +26,7 @@ describe('gulp-w3c-html-validator', function () {
             should.exist(newFile.path);
             should.exist(newFile.relative);
             should.exist(newFile.contents);
-            newFile.path.should.equal('./test/html/valid.html');
+            newFile.path.should.equal('spec/html/valid.html');
             newFile.relative.should.equal('valid.html');
             ++a;
          });
@@ -44,10 +44,10 @@ describe('gulp-w3c-html-validator', function () {
          var a = 0;
 
          var fakeFile = new gutil.File({
-            path: './test/html/invalid.html',
-            cwd: './test/',
-            base: './test/html/',
-            contents: fs.readFileSync('./test/html/invalid.html')
+            path: 'spec/html/invalid.html',
+            cwd: 'spec/',
+            base: 'spec/html/',
+            contents: fs.readFileSync('spec/html/invalid.html')
          });
 
          var stream = w3cjs();
@@ -58,7 +58,7 @@ describe('gulp-w3c-html-validator', function () {
             should.exist(newFile.path);
             should.exist(newFile.relative);
             should.exist(newFile.contents);
-            newFile.path.should.equal('./test/html/invalid.html');
+            newFile.path.should.equal('spec/html/invalid.html');
             newFile.relative.should.equal('invalid.html');
             ++a;
          });
@@ -76,10 +76,10 @@ describe('gulp-w3c-html-validator', function () {
          var a = 0;
 
          var fakeFile = new gutil.File({
-            path: './test/html/invalid.html',
-            cwd: './test/',
-            base: './test/html/',
-            contents: fs.readFileSync('./test/html/invalid.html')
+            path: 'spec/html/invalid.html',
+            cwd: 'spec/',
+            base: 'spec/html/',
+            contents: fs.readFileSync('spec/html/invalid.html')
          });
 
          var stream = w3cjs({
@@ -118,10 +118,10 @@ describe('gulp-w3c-html-validator', function () {
    describe('w3cjs.reporter()', function () {
       it('should pass files through', function () {
          var fakeFile = new gutil.File({
-            path: './test/html/valid.html',
-            cwd: './test/',
-            base: './test/html/',
-            contents: fs.readFileSync('./test/html/valid.html')
+            path: 'spec/html/valid.html',
+            cwd: 'spec/',
+            base: 'spec/html/',
+            contents: fs.readFileSync('spec/html/valid.html')
          });
 
          var stream = w3cjs.reporter();
@@ -133,10 +133,10 @@ describe('gulp-w3c-html-validator', function () {
 
       it('should contain a reporter by default', function () {
          var fakeFile = new gutil.File({
-            path: './test/html/invalid.html',
-            cwd: './test/',
-            base: './test/html/',
-            contents: fs.readFileSync('./test/html/invalid.html')
+            path: 'spec/html/invalid.html',
+            cwd: 'spec/',
+            base: 'spec/html/',
+            contents: fs.readFileSync('spec/html/invalid.html')
          });
 
          fakeFile.w3cjs = {
