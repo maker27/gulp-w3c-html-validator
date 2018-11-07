@@ -15,74 +15,71 @@ var gutil = require('gulp-util');
  * @return boolean Return false if errors have occurred.
  */
 function handleMessages(file, messages, options) {
-	var success = true;
-	var errorText = gutil.colors.red.bold('HTML Error:');
-	var warningText = gutil.colors.yellow.bold('HTML Warning:');
-	var infoText = gutil.colors.green.bold('HTML Info:');
-	var lines = file.contents.toString().split(/\r\n|\r|\n/g);
+   var success = true;
+   var errorText = gutil.colors.red.bold('HTML Error:');
+   var warningText = gutil.colors.yellow.bold('HTML Warning:');
+   var infoText = gutil.colors.green.bold('HTML Info:');
+   var lines = file.contents.toString().split(/\r\n|\r|\n/g);
+   if (!Array.isArray(messages)) {
+      gutil.log(warningText, 'Failed to run validation on', file.relative);
+      return true;  //todo: check if this should be false
+   }
 
-	if (!Array.isArray(messages)) {
-		gutil.log(warningText, 'Failed to run validation on', file.relative);
+   messages.forEach(function (message) {
 
-		// Not sure whether this should be true or false
-		return true;
-	}
+      // allows you to intercept info, warnings or errors, using `options.verifyMessage` methed, returning false will skip the log output
+      if(options.verifyMessage && !options.verifyMessage(message.type, message.message)) return;
 
-	messages.forEach(function (message) {
+      if (message.type === 'info' && !options.showInfo) {
+         return;
+      }
 
-		// allows you to intercept info, warnings or errors, using `options.verifyMessage` methed, returning false will skip the log output
-		if(options.verifyMessage && !options.verifyMessage(message.type, message.message)) return;
+      if (message.type === 'error') {
+         success = false;
+      }
 
-		if (message.type === 'info' && !options.showInfo) {
-			return;
-		}
+      var type = (message.type === 'error') ? errorText : ((message.type === 'info') ? infoText : warningText);
 
-		if (message.type === 'error') {
-			success = false;
-		}
+      var location = 'Line ' + (message.lastLine || 0) + ', Column ' + (message.lastColumn || 0) + ':';
 
-		var type = (message.type === 'error') ? errorText : ((message.type === 'info') ? infoText : warningText);
+      var erroredLine = lines[message.lastLine - 1];
 
-		var location = 'Line ' + (message.lastLine || 0) + ', Column ' + (message.lastColumn || 0) + ':';
+      // If this is false, stream was changed since validation
+      if (erroredLine) {
+         var errorColumn = message.lastColumn;
 
-		var erroredLine = lines[message.lastLine - 1];
+         // Trim before if the error is too late in the line
+         if (errorColumn > 60) {
+            erroredLine = erroredLine.slice(errorColumn - 50);
+            errorColumn = 50;
+         }
 
-		// If this is false, stream was changed since validation
-		if (erroredLine) {
-			var errorColumn = message.lastColumn;
+         // Trim after so the line is not too long
+         erroredLine = erroredLine.slice(0, 60);
 
-			// Trim before if the error is too late in the line
-			if (errorColumn > 60) {
-				erroredLine = erroredLine.slice(errorColumn - 50);
-				errorColumn = 50;
-			}
+         // Highlight character with error
+         erroredLine =
+            gutil.colors.grey(erroredLine.substring(0, errorColumn - 1)) +
+            gutil.colors.red.bold(erroredLine[ errorColumn - 1 ]) +
+            gutil.colors.grey(erroredLine.substring(errorColumn));
+      }
 
-			// Trim after so the line is not too long
-			erroredLine = erroredLine.slice(0, 60);
+      if (typeof(message.lastLine) !== 'undefined' || typeof(lastColumn) !== 'undefined') {
+         gutil.log(type, file.relative, location, message.message);
+      } else {
+         gutil.log(type, file.relative, message.message);
+      }
 
-			// Highlight character with error
-			erroredLine =
-				gutil.colors.grey(erroredLine.substring(0, errorColumn - 1)) +
-				gutil.colors.red.bold(erroredLine[ errorColumn - 1 ]) +
-				gutil.colors.grey(erroredLine.substring(errorColumn));
-		}
+      if (erroredLine) {
+         gutil.log(erroredLine);
+      }
+   });
 
-		if (typeof(message.lastLine) !== 'undefined' || typeof(lastColumn) !== 'undefined') {
-			gutil.log(type, file.relative, location, message.message);
-		} else {
-			gutil.log(type, file.relative, message.message);
-		}
-
-		if (erroredLine) {
-			gutil.log(erroredLine);
-		}
-	});
-
-	return success;
+   return success;
 }
 
 function reporter() {
-	return through.obj(function(file, enc, cb) {
+   return through.obj(function(file, enc, cb) {
         cb(null, file);
         if (file.w3cjs && !file.w3cjs.success) {
             throw new gutil.PluginError('gulp-w3c-html-validator', 'HTML validation error(s) found');
@@ -91,41 +88,41 @@ function reporter() {
 }
 
 module.exports = function (options) {
-	options = options || {};
+   options = options || {};
 
-	// I typo'd this and didn't want to break BC
-	if (typeof options.uri === 'string') {
-		options.url = options.uri;
-	}
+   // I typo'd this and didn't want to break BC
+   if (typeof options.uri === 'string') {
+      options.url = options.uri;
+   }
 
-	if (typeof options.url === 'string') {
-		w3cjs.setW3cCheckUrl(options.url);
-	}
+   if (typeof options.url === 'string') {
+      w3cjs.setW3cCheckUrl(options.url);
+   }
 
-	return through.obj(function (file, enc, callback) {
-		if (file.isNull()) {
-			return callback(null, file);
-		}
+   return through.obj(function (file, enc, callback) {
+      if (file.isNull()) {
+         return callback(null, file);
+      }
 
-		if (file.isStream()) {
-			return callback(new gutil.PluginError('gulp-w3c-html-validator', 'Streaming not supported'));
-		}
+      if (file.isStream()) {
+         return callback(new gutil.PluginError('gulp-w3c-html-validator', 'Streaming not supported'));
+      }
 
-		w3cjs.validate({
-			proxy: options.proxy ? options.proxy : undefined,
-			input: file.contents,
-			callback: function (error, res) {
-				if (error)
-					console.log(error);
-				file.w3cjs = {
-					success: handleMessages(file, res.messages, options),
-					messages: res.messages
-				};
+      w3cjs.validate({
+         proxy: options.proxy ? options.proxy : undefined,
+         input: file.contents,
+         callback: function (error, res) {
+            if (error)
+               console.log(error);
+            file.w3cjs = {
+               success: handleMessages(file, res.messages, options),
+               messages: res.messages
+            };
 
-				callback(null, file);
-			}
-		});
-	});
+            callback(null, file);
+         }
+      });
+   });
 };
 
 module.exports.reporter = reporter;
