@@ -1,159 +1,158 @@
 // Mocha Specification Cases
 
-var fs = require('fs');
-var should = require('should');
+// Imports
+const fs =             require('fs');
+const should =         require('should');
+const gutil =          require('gulp-util');
+const htmlValidator =  require('../html-validator.js');
 
-var gutil = require('gulp-util');
-var w3cjs = require('../');
+////////////////////////////////////////////////////////////////////////////////////////////////////
+describe('The gulp-w3c-html-validator plugin', () => {
 
-describe('gulp-w3c-html-validator', function () {
-   describe('w3cjs()', function () {
-      it('should pass valid files', function (done) {
-         var a = 0;
-
-         var fakeFile = new gutil.File({
-            path: 'spec/html/valid.html',
-            cwd: 'spec/',
-            base: 'spec/html/',
-            contents: fs.readFileSync('spec/html/valid.html')
-         });
-
-         var stream = w3cjs({showInfo: true});
-         stream.on('data', function (newFile) {
-            should.exist(newFile);
-            newFile.w3cjs.success.should.equal(true);
-            newFile.w3cjs.messages.filter(function(m) { return m.type!=="info"; }).length.should.equal(0);
-            should.exist(newFile.path);
-            should.exist(newFile.relative);
-            should.exist(newFile.contents);
-            newFile.path.should.equal('spec/html/valid.html');
-            newFile.relative.should.equal('valid.html');
-            ++a;
-         });
-
-         stream.once('end', function () {
-            a.should.equal(1);
-            done();
-         });
-
-         stream.write(fakeFile);
-         stream.end();
-      });
-
-      it('should fail invalid files', function (done) {
-         var a = 0;
-
-         var fakeFile = new gutil.File({
-            path: 'spec/html/invalid.html',
-            cwd: 'spec/',
-            base: 'spec/html/',
-            contents: fs.readFileSync('spec/html/invalid.html')
-         });
-
-         var stream = w3cjs();
-         stream.on('data', function (newFile) {
-            should.exist(newFile);
-            newFile.w3cjs.success.should.equal(false);
-            newFile.w3cjs.messages.filter(function(m) { return m.type!=="info"; }).length.should.equal(2);
-            should.exist(newFile.path);
-            should.exist(newFile.relative);
-            should.exist(newFile.contents);
-            newFile.path.should.equal('spec/html/invalid.html');
-            newFile.relative.should.equal('invalid.html');
-            ++a;
-         });
-
-         stream.once('end', function () {
-            a.should.equal(1);
-            done();
-         });
-
-         stream.write(fakeFile);
-         stream.end();
-      });
-
-      it('should allow a custom error to be ignored when `options.verifyMessage` used', function(done) {
-         var a = 0;
-
-         var fakeFile = new gutil.File({
-            path: 'spec/html/invalid.html',
-            cwd: 'spec/',
-            base: 'spec/html/',
-            contents: fs.readFileSync('spec/html/invalid.html')
-         });
-
-         var stream = w3cjs({
-            verifyMessage: function(type, message) {
-
-               // prevent logging error message
-               if(message.indexOf('End tag for  “body” seen, but') === 0) return false;
-               if(message.indexOf('Unclosed element “h1”.') === 0) return false;
-
-               // allow message to pass through
-               return true;
-            }
-         });
-         stream.on('data', function (newFile) {
-            should.exist(newFile);
-            newFile.w3cjs.success.should.equal(true);
-            ++a;
-         });
-
-         stream.once('end', function () {
-            a.should.equal(1);
-            done();
-         });
-
-         stream.write(fakeFile);
-         stream.end();
-      });
-   });
-
-   describe('w3cjs.setW3cCheckUrl()', function () {
-      it('should be possible to set a new checkUrl', function () {
-         w3cjs.setW3cCheckUrl('http://localhost');
-      });
-   });
-
-   describe('w3cjs.reporter()', function () {
-      it('should pass files through', function () {
-         var fakeFile = new gutil.File({
-            path: 'spec/html/valid.html',
-            cwd: 'spec/',
-            base: 'spec/html/',
-            contents: fs.readFileSync('spec/html/valid.html')
-         });
-
-         var stream = w3cjs.reporter();
-         stream.write(fakeFile);
-         stream.end();
-
-         return stream;
-      });
-
-      it('should contain a reporter by default', function () {
-         var fakeFile = new gutil.File({
-            path: 'spec/html/invalid.html',
-            cwd: 'spec/',
-            base: 'spec/html/',
-            contents: fs.readFileSync('spec/html/invalid.html')
-         });
-
-         fakeFile.w3cjs = {
-            success: false,
-            messages: ['ur html is valid']
+   it('passes valid files', (done) => {
+      let fileCount = 0;
+      const vinylOptions = {
+         path:     'spec/html/valid.html',
+         cwd:      'spec/',
+         base:     'spec/html/',
+         contents: fs.readFileSync('spec/html/valid.html')
          };
-
-         var stream = w3cjs.reporter();
-
-         (function () {
-            stream.write(fakeFile);
-         }).should.throw(/HTML validation error\(s\) found/);
-
-         stream.end();
-
-         return stream;
+      const mockFile = new gutil.File(vinylOptions);
+      const stream = htmlValidator({ showInfo: true });
+      function notInfoType(message) { return message.type !== 'info'; }
+      function handleFileFromStream(file) {
+         should.exist(file);
+         file.w3cjs.success.should.equal(true);
+         file.w3cjs.messages.filter(notInfoType).length.should.equal(0);
+         should.exist(file.path);
+         should.exist(file.relative);
+         should.exist(file.contents);
+         file.path.should.equal('spec/html/valid.html');
+         file.relative.should.equal('valid.html');
+         fileCount++;
+         }
+      function handleEndOfStream() {
+         fileCount.should.equal(1);
+         done();
+         }
+      stream.on('data', handleFileFromStream);
+      stream.once('end', handleEndOfStream);
+      stream.write(mockFile);
+      stream.end();
       });
+
+   it('fails invalid files', (done) => {
+      let fileCount = 0;
+      const vinylOptions = {
+         path:     'spec/html/invalid.html',
+         cwd:      'spec/',
+         base:     'spec/html/',
+         contents: fs.readFileSync('spec/html/invalid.html')
+         };
+      const mockFile = new gutil.File(vinylOptions);
+      const stream = htmlValidator();
+      function notInfoType(message) { return message.type !== 'info'; }
+      function handleFileFromStream(file) {
+         should.exist(file);
+         file.w3cjs.success.should.equal(false);
+         file.w3cjs.messages.filter(notInfoType).length.should.equal(2);
+         should.exist(file.path);
+         should.exist(file.relative);
+         should.exist(file.contents);
+         file.path.should.equal('spec/html/invalid.html');
+         file.relative.should.equal('invalid.html');
+         fileCount++;
+         }
+      function handleEndOfStream() {
+         fileCount.should.equal(1);
+         done();
+         }
+      stream.on('data', handleFileFromStream);
+      stream.once('end', handleEndOfStream);
+      stream.write(mockFile);
+      stream.end();
+      });
+
    });
 
-});
+////////////////////////////////////////////////////////////////////////////////////////////////////
+describe('The verifyMessage option', () => {
+
+   it('allows a custom error to be ignored', (done) => {
+      let fileCount = 0;
+      const vinylOptions = {
+         path:     'spec/html/invalid.html',
+         cwd:      'spec/',
+         base:     'spec/html/',
+         contents: fs.readFileSync('spec/html/invalid.html')
+         };
+      const mockFile = new gutil.File(vinylOptions);
+      function verifyMessage(type, message) {
+         const ignoreMessages = [/^End tag for  .body. seen/, /^Unclosed element .h1./];
+         return !ignoreMessages.map((ignore) => ignore.test(message)).includes(true);
+         }
+      const stream = htmlValidator({ verifyMessage: verifyMessage });
+      function handleFileFromStream(file) {
+         should.exist(file);
+         file.w3cjs.success.should.equal(true);
+         fileCount++;
+         }
+      function handleEndOfStream() {
+         fileCount.should.equal(1);
+         done();
+         }
+      stream.on('data', handleFileFromStream);
+      stream.once('end', handleEndOfStream);
+      stream.write(mockFile);
+      stream.end();
+      });
+
+   });
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+describe('The htmlValidator.setW3cCheckUrl() function', () => {
+
+   it('sets a new URL to checkUrl', () => {
+      htmlValidator.setW3cCheckUrl('http://localhost');
+      });
+
+   });
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+describe('The htmlValidator.reporter() function', () => {
+
+   it('passes files through', () => {
+      const vinylOptions = {
+         path:     'spec/html/valid.html',
+         cwd:      'spec/',
+         base:     'spec/html/',
+         contents: fs.readFileSync('spec/html/valid.html')
+         };
+      const mockFile = new gutil.File(vinylOptions);
+      const stream = htmlValidator.reporter();
+      stream.write(mockFile);
+      stream.end();
+      return stream;
+      });
+
+   it('contain a reporter by default', () => {
+      const vinylOptions = {
+         path:     'spec/html/invalid.html',
+         cwd:      'spec/',
+         base:     'spec/html/',
+         contents: fs.readFileSync('spec/html/invalid.html')
+         };
+      const mockFile = new gutil.File(vinylOptions);
+      mockFile.w3cjs = {
+         success:  false,
+         messages: ['HTML is valid']
+         };
+      const stream = htmlValidator.reporter();
+      (function() {
+         stream.write(mockFile);
+         }).should.throw(/HTML validation error\(s\) found/);
+      stream.end();
+      return stream;
+      });
+
+   });

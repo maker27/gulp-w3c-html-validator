@@ -3,127 +3,122 @@
 // https://github.com/center-key/gulp-w3c-html-validator
 // MIT License
 
-var through = require('through2');
-var w3cjs = require('w3cjs');
-var gutil = require('gulp-util');
+// Imports
+const through = require('through2');
+const w3cjs =   require('w3cjs');
+const gutil =   require('gulp-util');
 
-/**
- * Handles messages.
- *
- * @param file The file array.
- * @param messages Array of messages returned by w3cjs.
- * @return boolean Return false if errors have occurred.
- */
+// Setup
+const pluginName = 'gulp-w3c-html-validator';
+
+// Plugin
 function handleMessages(file, messages, options) {
-   var success = true;
-   var errorText = gutil.colors.red.bold('HTML Error:');
-   var warningText = gutil.colors.yellow.bold('HTML Warning:');
-   var infoText = gutil.colors.green.bold('HTML Info:');
-   var lines = file.contents.toString().split(/\r\n|\r|\n/g);
-   if (!Array.isArray(messages)) {
-      gutil.log(warningText, 'Failed to run validation on', file.relative);
-      return true;  //todo: check if this should be false
-   }
-
-   messages.forEach(function (message) {
-
-      // allows you to intercept info, warnings or errors, using `options.verifyMessage` methed, returning false will skip the log output
-      if(options.verifyMessage && !options.verifyMessage(message.type, message.message)) return;
-
-      if (message.type === 'info' && !options.showInfo) {
-         return;
-      }
-
-      if (message.type === 'error') {
-         success = false;
-      }
-
-      var type = (message.type === 'error') ? errorText : ((message.type === 'info') ? infoText : warningText);
-
-      var location = 'Line ' + (message.lastLine || 0) + ', Column ' + (message.lastColumn || 0) + ':';
-
-      var erroredLine = lines[message.lastLine - 1];
-
-      // If this is false, stream was changed since validation
-      if (erroredLine) {
-         var errorColumn = message.lastColumn;
-
-         // Trim before if the error is too late in the line
-         if (errorColumn > 60) {
-            erroredLine = erroredLine.slice(errorColumn - 50);
-            errorColumn = 50;
+   // Parameers:
+   //    file - array of files to validate
+   //    messages - array of messages returned by w3cjs
+   //    options - settings object
+   // Returns:
+   //    boolean indicating success (true if no errors occurred)
+   const text = {
+      error:   gutil.colors.red.bold('HTML Error:'),
+      warning: gutil.colors.yellow.bold('HTML Warning:'),
+      into:    gutil.colors.green.bold('HTML Info:')
+      };
+   const lines = file.contents.toString().split(/\r\n|\r|\n/g);
+   let success = true;
+   function processMessage(message) {
+      // Example message object:
+      //    {
+      //       type:         'error',
+      //       message:      'Unclosed element “h1”.',
+      //       extract:      '<body>\n   <h1>Specif',
+      //       lastLine:     8,
+      //       firstColumn:  4,
+      //       lastColumn:   7,
+      //       hiliteStart:  10,
+      //       hiliteLength: 4
+      //    }
+      if (options.verifyMessage && !options.verifyMessage(message.type, message.message))
+         return;  //skip this message
+      if (message.type === 'info' && !options.showInfo)
+         return;  //skip this message
+      success = success && message.type !== 'error';
+      const type = text[message.type] || text.warning;
+      const line = message.lastLine || 0;
+      const column = message.lastColumn || 0;
+      const location = 'Line ' + line + ', Column ' + column + ':';
+      let erroredLine = lines[line - 1];
+      let errorColumn = message.lastColumn;
+      function trimErrorLength() {
+         erroredLine = erroredLine.slice(errorColumn - 50);
+         errorColumn = 50;
          }
-
-         // Trim after so the line is not too long
-         erroredLine = erroredLine.slice(0, 60);
-
-         // Highlight character with error
-         erroredLine =
+      function formatErroredLine() {
+         if (errorColumn > 60)
+            trimErrorLength();
+         erroredLine = erroredLine.slice(0, 60);  //trim after so the line is not too long
+         erroredLine =  //highlight character with error
             gutil.colors.grey(erroredLine.substring(0, errorColumn - 1)) +
-            gutil.colors.red.bold(erroredLine[ errorColumn - 1 ]) +
+            gutil.colors.red.bold(erroredLine[errorColumn - 1]) +
             gutil.colors.grey(erroredLine.substring(errorColumn));
-      }
-
-      if (typeof(message.lastLine) !== 'undefined' || typeof(lastColumn) !== 'undefined') {
+         }
+      if (erroredLine)  //if false, stream was changed since validation
+         formatErroredLine();
+      if (typeof message.lastLine !== 'undefined' || typeof lastColumn !== 'undefined')
          gutil.log(type, file.relative, location, message.message);
-      } else {
+      else
          gutil.log(type, file.relative, message.message);
-      }
-
-      if (erroredLine) {
+      if (erroredLine)
          gutil.log(erroredLine);
       }
-   });
-
+   if (Array.isArray(messages))
+      messages.forEach(processMessage);
+   else
+      gutil.log(text.warning, 'Failed to run validation on', file.relative);
    return success;
-}
+   }
 
 function reporter() {
-   return through.obj(function(file, enc, cb) {
-        cb(null, file);
-        if (file.w3cjs && !file.w3cjs.success) {
-            throw new gutil.PluginError('gulp-w3c-html-validator', 'HTML validation error(s) found');
-        }
-    });
-}
+   function transform(file, encoding, done) {
+      done(null, file);
+      if (file.w3cjs && !file.w3cjs.success)
+         throw new gutil.PluginError(pluginName, 'HTML validation error(s) found');
+      }
+   return through.obj(transform);
+   }
 
-module.exports = function (options) {
+function htmlValidator(options) {
    options = options || {};
-
-   // I typo'd this and didn't want to break BC
-   if (typeof options.uri === 'string') {
-      options.url = options.uri;
-   }
-
-   if (typeof options.url === 'string') {
+   if (typeof options.uri === 'string')
+      options.url = options.uri;  //backwards compatibility
+   if (typeof options.url === 'string')
       w3cjs.setW3cCheckUrl(options.url);
+   function transform(file, encoding, done) {
+      function handleValidation(error, response) {
+         if (error)
+            console.log(error);
+         file.w3cjs = {
+            success:  handleMessages(file, response.messages, options),
+            messages: response.messages
+            };
+         done(null, file);
+         }
+      const w3cjsOptions = {
+         proxy:    options.proxy,
+         input:    file.contents,
+         callback: handleValidation
+         };
+      if (file.isNull())
+         done(null, file);
+      else if (file.isStream())
+         done(new gutil.PluginError(pluginName, 'Streaming not supported'));
+      else
+         w3cjs.validate(w3cjsOptions);
+      }
+   return through.obj(transform);
    }
 
-   return through.obj(function (file, enc, callback) {
-      if (file.isNull()) {
-         return callback(null, file);
-      }
-
-      if (file.isStream()) {
-         return callback(new gutil.PluginError('gulp-w3c-html-validator', 'Streaming not supported'));
-      }
-
-      w3cjs.validate({
-         proxy: options.proxy ? options.proxy : undefined,
-         input: file.contents,
-         callback: function (error, res) {
-            if (error)
-               console.log(error);
-            file.w3cjs = {
-               success: handleMessages(file, res.messages, options),
-               messages: res.messages
-            };
-
-            callback(null, file);
-         }
-      });
-   });
-};
-
+// Module loading
+module.exports = htmlValidator;
 module.exports.reporter = reporter;
 module.exports.setW3cCheckUrl = w3cjs.setW3cCheckUrl;
