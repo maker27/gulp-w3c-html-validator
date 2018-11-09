@@ -14,13 +14,14 @@ This Gulp plugin is a wrapper for [w3cjs](https://github.com/thomasdavis/w3cjs) 
 ## 1) Setup
 Install module into your project:
 ```shell
-$ npm install gulp-w3c-html-validator --save-dev
+$ npm install --save-dev gulp-w3c-html-validator
 ```
 
 ## 2) Define task
 Create a task in your **gulpfile.js**:
 ```javascript
-// Import
+// Imports
+const gulp =          require('gulp');
 const htmlValidator = require('gulp-w3c-html-validator');
 
 // Tasks
