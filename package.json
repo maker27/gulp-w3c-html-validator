@@ -1,6 +1,6 @@
 {
    "name": "gulp-w3c-html-validator",
-   "version": "1.4.2",
+   "version": "1.4.3",
    "license": "MIT",
    "description": "Gulp plugin to validate HTML using the W3C Markup Validation Service",
    "main": "html-validator.js",
@@ -8,6 +8,10 @@
    "homepage": "https://github.com/center-key/gulp-w3c-html-validator",
    "bugs": "https://github.com/center-key/gulp-w3c-html-validator/issues",
    "docs": "https://github.com/center-key/gulp-w3c-html-validator#readme",
+   "author": "Callum Macrae (https://github.com/callumacrae)",
+   "contributors": [
+      "Dem Pilafian (https://twitter.com/dempilafian)"
+   ],
    "keywords": [
       "gulp",
       "gulp-plugin",
@@ -17,10 +21,6 @@
       "validate",
       "validation",
       "w3c"
-   ],
-   "author": "Callum Macrae (https://github.com/callumacrae)",
-   "contributors": [
-      "Dem Pilafian (https://twitter.com/dempilafian)"
    ],
    "jshintConfig": {
       "esversion": 6,
