@@ -1,10 +1,12 @@
 // Mocha Specification Cases
 
 // Imports
-const fs =             require('fs');
-const should =         require('should');
-const gutil =          require('gulp-util');
-const htmlValidator =  require('../html-validator.js');
+const fs =     require('fs');
+const gutil =  require('gulp-util');
+const should = require('should');
+
+// Plugin
+const htmlValidator = require('../html-validator.js');
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 describe('The gulp-w3c-html-validator plugin', () => {
