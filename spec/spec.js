@@ -9,7 +9,7 @@ const htmlValidator =  require('../html-validator.js');
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 describe('The gulp-w3c-html-validator plugin', () => {
 
-   it('passes valid files', (done) => {
+   it('passes a valid file', (done) => {
       let fileCount = 0;
       const vinylOptions = {
          path:     'spec/html/valid.html',
@@ -41,7 +41,39 @@ describe('The gulp-w3c-html-validator plugin', () => {
       stream.end();
       });
 
-   it('fails invalid files', (done) => {
+   it('reports a file with a warning', (done) => {
+      let fileCount = 0;
+      const vinylOptions = {
+         path:     'spec/html/warning.html',
+         cwd:      'spec/',
+         base:     'spec/html/',
+         contents: fs.readFileSync('spec/html/warning.html')
+         };
+      const mockFile = new gutil.File(vinylOptions);
+      const stream = htmlValidator({ showInfo: true });
+      function notInfoType(message) { return message.type !== 'info'; }
+      function handleFileFromStream(file) {
+         should.exist(file);
+         file.w3cjs.success.should.equal(true);
+         file.w3cjs.messages.filter(notInfoType).length.should.equal(0);
+         should.exist(file.path);
+         should.exist(file.relative);
+         should.exist(file.contents);
+         file.path.should.equal('spec/html/warning.html');
+         file.relative.should.equal('warning.html');
+         fileCount++;
+         }
+      function handleEndOfStream() {
+         fileCount.should.equal(1);
+         done();
+         }
+      stream.on('data', handleFileFromStream);
+      stream.once('end', handleEndOfStream);
+      stream.write(mockFile);
+      stream.end();
+      });
+
+   it('fails an invalid file', (done) => {
       let fileCount = 0;
       const vinylOptions = {
          path:     'spec/html/invalid.html',
@@ -135,7 +167,7 @@ describe('The htmlValidator.reporter() function', () => {
       return stream;
       });
 
-   it('contain a reporter by default', () => {
+   it('contains a reporter by default', () => {
       const vinylOptions = {
          path:     'spec/html/invalid.html',
          cwd:      'spec/',
