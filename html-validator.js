@@ -4,9 +4,9 @@
 // MIT License
 
 // Imports
-const through = require('through2');
-const w3cjs =   require('w3cjs');
-const gutil =   require('gulp-util');
+const through2 = require('through2');
+const w3cjs =    require('w3cjs');
+const gutil =    require('gulp-util');
 
 // Setup
 const pluginName = 'gulp-w3c-html-validator';
@@ -14,7 +14,7 @@ const pluginName = 'gulp-w3c-html-validator';
 // Gulp plugin
 const plugin = {
 
-   handleMessages: function(file, messages, options) {
+   handleMessages: (file, messages, options) => {
       // Parameers:
       //    file - array of files to validate
       //    messages - array of messages returned by w3cjs
@@ -28,7 +28,7 @@ const plugin = {
          };
       const lines = file.contents.toString().split(/\r\n|\r|\n/g);
       let success = true;
-      function processMessage(message) {
+      const processMessage = (message) => {
          // Example message object:
          //    {
          //       type:         'error',
@@ -51,11 +51,11 @@ const plugin = {
          const location = 'Line ' + line + ', Column ' + column + ':';
          let erroredLine = lines[line - 1];
          let errorColumn = message.lastColumn;
-         function trimErrorLength() {
+         const trimErrorLength = () => {
             erroredLine = erroredLine.slice(errorColumn - 50);
             errorColumn = 50;
-            }
-         function formatErroredLine() {
+            };
+         const formatErroredLine = () => {
             if (errorColumn > 60)
                trimErrorLength();
             erroredLine = erroredLine.slice(0, 60);  //trim after so the line is not too long
@@ -63,7 +63,7 @@ const plugin = {
                gutil.colors.grey(erroredLine.substring(0, errorColumn - 1)) +
                gutil.colors.red.bold(erroredLine[errorColumn - 1]) +
                gutil.colors.grey(erroredLine.substring(errorColumn));
-            }
+            };
          if (erroredLine)  //if false, stream was changed since validation
             formatErroredLine();
          if (typeof message.lastLine !== 'undefined' || typeof lastColumn !== 'undefined')
@@ -72,7 +72,7 @@ const plugin = {
             gutil.log(type, file.relative, message.message);
          if (erroredLine)
             gutil.log(erroredLine);
-         }
+         };
       if (Array.isArray(messages))
          messages.forEach(processMessage);
       else
@@ -80,14 +80,14 @@ const plugin = {
       return success;
       },
 
-   htmlValidator: function(options) {
+   htmlValidator: (options) => {
       options = options || {};
       if (typeof options.uri === 'string')
          options.url = options.uri;  //backwards compatibility
       if (typeof options.url === 'string')
          w3cjs.setW3cCheckUrl(options.url);
-      function transform(file, encoding, done) {
-         function handleValidation(error, response) {
+      const transform = (file, encoding, done) => {
+         const handleValidation = (error, response) => {
             if (error)
                console.log(error);
             file.w3cjs = {
@@ -95,7 +95,7 @@ const plugin = {
                messages: response.messages
                };
             done(null, file);
-            }
+            };
          const w3cjsOptions = {
             proxy:    options.proxy,
             input:    file.contents,
@@ -107,17 +107,17 @@ const plugin = {
             done(new gutil.PluginError(pluginName, 'Streaming not supported'));
          else
             w3cjs.validate(w3cjsOptions);
-         }
-      return through.obj(transform);
+         };
+      return through2.obj(transform);
       },
 
-   reporter: function() {
-      function transform(file, encoding, done) {
+   reporter: () => {
+      const transform = (file, encoding, done) => {
          done(null, file);
          if (file.w3cjs && !file.w3cjs.success)
             throw new gutil.PluginError(pluginName, 'HTML validation error(s) found');
-         }
-      return through.obj(transform);
+         };
+      return through2.obj(transform);
       }
 
    };

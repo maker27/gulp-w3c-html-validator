@@ -26,7 +26,7 @@ const htmlValidator = require('gulp-w3c-html-validator');
 
 // Tasks
 const task = {
-   validateHtml: function() {
+   validateHtml: () => {
       return gulp.src('target/**/*.html')
          .pipe(htmlValidator())
          .pipe(htmlValidator.reporter());
@@ -49,12 +49,12 @@ const through2 =      require('through2');
 
 // Tasks
 const task = {
-   validateHtml: function() {
-      function handleFile(file, encoding, callback) {
+   validateHtml: () => {
+      const handleFile = (file, encoding, callback) => {
          callback(null, file);
          if (!file.w3cjs.success)
             throw new Error('HTML validation error(s) found');
-         }
+         };
       return gulp.src('target/**/*.html')
          .pipe(htmlValidator())
          .pipe(through2.obj(handleFile));
@@ -91,10 +91,8 @@ Example usage:
 ```javascript
 // Tasks
 const task = {
-   validateHtml: function() {
-      function ignoreDuplicateIds(type, message) {
-         return !/^Duplicate ID/.test(message);
-         }
+   validateHtml: () => {
+      const ignoreDuplicateIds = (type, message) => !/^Duplicate ID/.test(message);
       return gulp.src('target/**/*.html')
          .pipe(htmlValidator({ verifyMessage: ignoreDuplicateIds }))
          .pipe(htmlValidator.reporter());
