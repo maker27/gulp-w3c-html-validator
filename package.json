@@ -35,6 +35,7 @@
       "test": "mocha spec/spec.js"
    },
    "dependencies": {
+      "ansi-colors": "^3.2.3",
       "gulp-util": "~3.0",
       "through2": "~3.0",
       "w3cjs": "~0.4"

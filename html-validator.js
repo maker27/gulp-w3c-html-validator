@@ -7,7 +7,7 @@
 const through2 = require('through2');
 const w3cjs =    require('w3cjs');
 const gutil =    require('gulp-util');
-
+const color = require('ansi-colors');
 // Setup
 const pluginName = 'gulp-w3c-html-validator';
 
@@ -15,16 +15,16 @@ const pluginName = 'gulp-w3c-html-validator';
 const plugin = {
 
    handleMessages: (file, messages, options) => {
-      // Parameers:
+      // Parameters:
       //    file - array of files to validate
       //    messages - array of messages returned by w3cjs
       //    options - settings object
       // Returns:
       //    boolean indicating success (true if no errors occurred)
       const text = {
-         error:   gutil.colors.red.bold('HTML Error:'),
-         warning: gutil.colors.yellow.bold('HTML Warning:'),
-         into:    gutil.colors.green.bold('HTML Info:')
+         error:   color.red.bold('HTML Error:'),
+         warning: color.yellow.bold('HTML Warning:'),
+         into:    color.green.bold('HTML Info:')
          };
       const lines = file.contents.toString().split(/\r\n|\r|\n/g);
       let success = true;
@@ -60,9 +60,9 @@ const plugin = {
                trimErrorLength();
             erroredLine = erroredLine.slice(0, 60);  //trim after so the line is not too long
             erroredLine =  //highlight character with error
-               gutil.colors.grey(erroredLine.substring(0, errorColumn - 1)) +
-               gutil.colors.red.bold(erroredLine[errorColumn - 1]) +
-               gutil.colors.grey(erroredLine.substring(errorColumn));
+               color.grey(erroredLine.substring(0, errorColumn - 1)) +
+               color.red.bold(erroredLine[errorColumn - 1]) +
+               color.grey(erroredLine.substring(errorColumn));
             };
          if (erroredLine)  //if false, stream was changed since validation
             formatErroredLine();
