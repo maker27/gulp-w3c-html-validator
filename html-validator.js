@@ -4,10 +4,11 @@
 // MIT License
 
 // Imports
+const color =    require('ansi-colors');
+const gutil =    require('gulp-util');
 const through2 = require('through2');
 const w3cjs =    require('w3cjs');
-const gutil =    require('gulp-util');
-const color = require('ansi-colors');
+
 // Setup
 const pluginName = 'gulp-w3c-html-validator';
 
@@ -16,9 +17,9 @@ const plugin = {
 
    handleMessages: (file, messages, options) => {
       // Parameters:
-      //    file - array of files to validate
+      //    file -     array of files to validate
       //    messages - array of messages returned by w3cjs
-      //    options - settings object
+      //    options -  settings object
       // Returns:
       //    boolean indicating success (true if no errors occurred)
       const text = {
@@ -60,9 +61,9 @@ const plugin = {
                trimErrorLength();
             erroredLine = erroredLine.slice(0, 60);  //trim after so the line is not too long
             erroredLine =  //highlight character with error
-               color.grey(erroredLine.substring(0, errorColumn - 1)) +
+               color.gray(erroredLine.substring(0, errorColumn - 1)) +
                color.red.bold(erroredLine[errorColumn - 1]) +
-               color.grey(erroredLine.substring(errorColumn));
+               color.gray(erroredLine.substring(errorColumn));
             };
          if (erroredLine)  //if false, stream was changed since validation
             formatErroredLine();
@@ -82,8 +83,6 @@ const plugin = {
 
    htmlValidator: (options) => {
       options = options || {};
-      if (typeof options.uri === 'string')
-         options.url = options.uri;  //backwards compatibility
       if (typeof options.url === 'string')
          w3cjs.setW3cCheckUrl(options.url);
       const transform = (file, encoding, done) => {
