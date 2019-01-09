@@ -6,6 +6,7 @@
 // Imports
 const color =    require('ansi-colors');
 const gutil =    require('gulp-util');
+const log =      require('fancy-log');
 const through2 = require('through2');
 const w3cjs =    require('w3cjs');
 
@@ -68,16 +69,16 @@ const plugin = {
          if (erroredLine)  //if false, stream was changed since validation
             formatErroredLine();
          if (typeof message.lastLine !== 'undefined' || typeof lastColumn !== 'undefined')
-            gutil.log(type, file.relative, location, message.message);
+            log(type, file.relative, location, message.message);
          else
-            gutil.log(type, file.relative, message.message);
+            log(type, file.relative, message.message);
          if (erroredLine)
-            gutil.log(erroredLine);
+            log(erroredLine);
          };
       if (Array.isArray(messages))
          messages.forEach(processMessage);
       else
-         gutil.log(text.warning, 'Failed to run validation on', file.relative);
+         log(text.warning, 'Failed to run validation on', file.relative);
       return success;
       },
 
