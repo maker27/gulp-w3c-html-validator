@@ -4,11 +4,11 @@
 // MIT License
 
 // Imports
-const color =    require('ansi-colors');
+const color =       require('ansi-colors');
 const PluginError = require('plugin-error');
-const log =      require('fancy-log');
-const through2 = require('through2');
-const w3cjs =    require('w3cjs');
+const log =         require('fancy-log');
+const through2 =    require('through2');
+const w3cjs =       require('w3cjs');
 
 // Setup
 const pluginName = 'gulp-w3c-html-validator';
