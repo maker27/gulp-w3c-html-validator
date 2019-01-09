@@ -41,6 +41,7 @@
       "w3cjs": "~0.4"
    },
    "devDependencies": {
+      "fancy-log": "^1.3.3",
       "jshint": "~2.9",
       "mocha": "~5.2",
       "should": "~13.2"
