@@ -5,7 +5,7 @@
 
 // Imports
 const color =    require('ansi-colors');
-const gutil =    require('gulp-util');
+const PluginError = require('plugin-error');
 const log =      require('fancy-log');
 const through2 = require('through2');
 const w3cjs =    require('w3cjs');
@@ -104,7 +104,7 @@ const plugin = {
          if (file.isNull())
             done(null, file);
          else if (file.isStream())
-            done(new gutil.PluginError(pluginName, 'Streaming not supported'));
+            done(new PluginError(pluginName, 'Streaming not supported'));
          else
             w3cjs.validate(w3cjsOptions);
          };
@@ -115,7 +115,7 @@ const plugin = {
       const transform = (file, encoding, done) => {
          done(null, file);
          if (file.w3cjs && !file.w3cjs.success)
-            throw new gutil.PluginError(pluginName, 'HTML validation error(s) found');
+            throw new PluginError(pluginName, 'HTML validation error(s) found');
          };
       return through2.obj(transform);
       }
