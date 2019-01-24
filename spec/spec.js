@@ -7,12 +7,14 @@ const should = require('should');
 
 // Plugin
 const htmlValidator = require('../html-validator.js');
+console.log('  Input HTML files for validation:');
+fs.readdirSync('spec/html').forEach(file => console.log('    spec/html/' + file));
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 describe('The gulp-w3c-html-validator plugin', () => {
 
    it('passes a valid file', (done) => {
-      let fileCount = 0;
+      const count = { files: 0 };
       const vinylOptions = {
          path:     'spec/html/valid.html',
          cwd:      'spec/',
@@ -31,10 +33,10 @@ describe('The gulp-w3c-html-validator plugin', () => {
          should.exist(file.contents);
          file.path.should.equal('spec/html/valid.html');
          file.relative.should.equal('valid.html');
-         fileCount++;
+         count.files++;
          };
       const handleEndOfStream = () => {
-         fileCount.should.equal(1);
+         count.files.should.equal(1);
          done();
          };
       stream.on('data', handleFileFromStream);
@@ -44,7 +46,7 @@ describe('The gulp-w3c-html-validator plugin', () => {
       });
 
    it('reports a file with a warning', (done) => {
-      let fileCount = 0;
+      const count = { files: 0 };
       const vinylOptions = {
          path:     'spec/html/warning.html',
          cwd:      'spec/',
@@ -63,10 +65,10 @@ describe('The gulp-w3c-html-validator plugin', () => {
          should.exist(file.contents);
          file.path.should.equal('spec/html/warning.html');
          file.relative.should.equal('warning.html');
-         fileCount++;
+         count.files++;
          };
       const handleEndOfStream = () => {
-         fileCount.should.equal(1);
+         count.files.should.equal(1);
          done();
          };
       stream.on('data', handleFileFromStream);
@@ -76,7 +78,7 @@ describe('The gulp-w3c-html-validator plugin', () => {
       });
 
    it('fails an invalid file', (done) => {
-      let fileCount = 0;
+      const count = { files: 0 };
       const vinylOptions = {
          path:     'spec/html/invalid.html',
          cwd:      'spec/',
@@ -95,13 +97,13 @@ describe('The gulp-w3c-html-validator plugin', () => {
          should.exist(file.contents);
          file.path.should.equal('spec/html/invalid.html');
          file.relative.should.equal('invalid.html');
-         fileCount++;
+         count.files++;
          };
       const handleEndOfStream = () => {
-         fileCount.should.equal(1);
+         count.files.should.equal(1);
          done();
          };
-      stream.on('data', handleFileFromStream);
+      stream.on('data',  handleFileFromStream);
       stream.once('end', handleEndOfStream);
       stream.write(mockFile);
       stream.end();
@@ -113,7 +115,7 @@ describe('The gulp-w3c-html-validator plugin', () => {
 describe('The verifyMessage option', () => {
 
    it('allows a custom error to be ignored', (done) => {
-      let fileCount = 0;
+      const count = { files: 0 };
       const vinylOptions = {
          path:     'spec/html/invalid.html',
          cwd:      'spec/',
@@ -129,10 +131,10 @@ describe('The verifyMessage option', () => {
       const handleFileFromStream = (file) => {
          should.exist(file);
          file.w3cjs.success.should.equal(true);
-         fileCount++;
+         count.files++;
          };
       const handleEndOfStream = () => {
-         fileCount.should.equal(1);
+         count.files.should.equal(1);
          done();
          };
       stream.on('data', handleFileFromStream);
