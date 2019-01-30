@@ -3,7 +3,7 @@
 // Imports
 const fs =     require('fs');
 const should = require('should');
-const Vinyl = require('vinyl');
+const Vinyl =  require('vinyl');
 
 // Plugin
 const htmlValidator = require('../html-validator.js');
