@@ -2,8 +2,8 @@
 
 // Imports
 const fs =     require('fs');
-const gutil =  require('gulp-util');
 const should = require('should');
+const Vinyl = require('vinyl');
 
 // Plugin
 const htmlValidator = require('../html-validator.js');
@@ -21,7 +21,7 @@ describe('The gulp-w3c-html-validator plugin', () => {
          base:     'spec/html/',
          contents: fs.readFileSync('spec/html/valid.html')
          };
-      const mockFile = new gutil.File(vinylOptions);
+      const mockFile = new Vinyl(vinylOptions);
       const stream = htmlValidator({ showInfo: true });
       const notInfoType = (message) => message.type !== 'info';
       const handleFileFromStream = (file) => {
@@ -53,7 +53,7 @@ describe('The gulp-w3c-html-validator plugin', () => {
          base:     'spec/html/',
          contents: fs.readFileSync('spec/html/warning.html')
          };
-      const mockFile = new gutil.File(vinylOptions);
+      const mockFile = new Vinyl(vinylOptions);
       const stream = htmlValidator({ showInfo: true });
       const notInfoType = (message) => message.type !== 'info';
       const handleFileFromStream = (file) => {
@@ -85,7 +85,7 @@ describe('The gulp-w3c-html-validator plugin', () => {
          base:     'spec/html/',
          contents: fs.readFileSync('spec/html/invalid.html')
          };
-      const mockFile = new gutil.File(vinylOptions);
+      const mockFile = new Vinyl(vinylOptions);
       const stream = htmlValidator();
       const notInfoType = (message) => message.type !== 'info';
       const handleFileFromStream = (file) => {
@@ -122,7 +122,7 @@ describe('The verifyMessage option', () => {
          base:     'spec/html/',
          contents: fs.readFileSync('spec/html/invalid.html')
          };
-      const mockFile = new gutil.File(vinylOptions);
+      const mockFile = new Vinyl(vinylOptions);
       const verifyMessage = (type, message) => {
          const ignoreMessages = [/^End tag for  .body. seen/, /^Unclosed element .h1./];
          return !ignoreMessages.map((ignore) => ignore.test(message)).includes(true);
@@ -164,7 +164,7 @@ describe('The htmlValidator.reporter() function', () => {
          base:     'spec/html/',
          contents: fs.readFileSync('spec/html/valid.html')
          };
-      const mockFile = new gutil.File(vinylOptions);
+      const mockFile = new Vinyl(vinylOptions);
       const stream = htmlValidator.reporter();
       stream.write(mockFile);
       stream.end();
@@ -178,7 +178,7 @@ describe('The htmlValidator.reporter() function', () => {
          base:     'spec/html/',
          contents: fs.readFileSync('spec/html/invalid.html')
          };
-      const mockFile = new gutil.File(vinylOptions);
+      const mockFile = new Vinyl(vinylOptions);
       mockFile.w3cjs = {
          success:  false,
          messages: ['HTML is valid']
