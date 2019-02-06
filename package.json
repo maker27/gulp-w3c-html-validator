@@ -43,7 +43,7 @@
       "w3cjs": "~0.4"
    },
    "devDependencies": {
-      "jshint": "~2.9",
+      "jshint": "~2.10",
       "mocha": "~5.2",
       "should": "~13.2"
    }

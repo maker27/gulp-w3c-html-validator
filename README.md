@@ -53,7 +53,7 @@ const task = {
       const handleFile = (file, encoding, callback) => {
          callback(null, file);
          if (!file.w3cjs.success)
-            throw new Error('HTML validation error(s) found');
+            throw Error('HTML validation error(s) found');
          };
       return gulp.src('target/**/*.html')
          .pipe(htmlValidator())
@@ -70,7 +70,7 @@ gulp.task('validate-html', task.validateHtml);
 HTML Error: index.html Line 5, Column 19: Element title must not be empty.
    <title></title>
 .../gulpfile.js:11
-         throw new Error('HTML validation error(s) found');
+         throw Error('HTML validation error(s) found');
                ^
 Error: HTML validation error(s) found
 ```
