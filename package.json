@@ -39,7 +39,7 @@
       "test": "mocha spec"
    },
    "dependencies": {
-      "ansi-colors": "~3.2",
+      "ansi-colors": "~4.1",
       "fancy-log": "~1.3",
       "plugin-error": "~1.0",
       "through2": "~3.0",
@@ -48,7 +48,7 @@
    },
    "devDependencies": {
       "jshint": "~2.10",
-      "mocha": "~6.1",
+      "mocha": "~6.2",
       "should": "~13.2"
    }
 }
