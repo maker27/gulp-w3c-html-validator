@@ -26,11 +26,11 @@ const htmlValidator = require('gulp-w3c-html-validator');
 
 // Tasks
 const task = {
-   validateHtml: () => {
+   validateHtml() {
       return gulp.src('target/**/*.html')
          .pipe(htmlValidator())
          .pipe(htmlValidator.reporter());
-      }
+      },
    };
 
 // Gulp
@@ -38,7 +38,7 @@ gulp.task('validate-html', task.validateHtml);
 ```
 
 ## 3) Custom Reporting
-The results are also added onto each file object under `w3cjs`, containing `success` (Boolean)
+The results are also added onto each file object under `w3cjs`, containing `success` (boolean)
 and `messages` (Array).
 
 ### Example usage
@@ -49,16 +49,16 @@ const through2 =      require('through2');
 
 // Tasks
 const task = {
-   validateHtml: () => {
+   validateHtml() {
       const handleFile = (file, encoding, callback) => {
          callback(null, file);
          if (!file.w3cjs.success)
             throw Error('HTML validation error(s) found');
          };
       return gulp.src('target/**/*.html')
-         .pipe(htmlValidator())
-         .pipe(through2.obj(handleFile));
-      }
+         .pipe(htmlValidator({ showInfo: true }))
+         .pipe(through2.obj(handleFile));  //custom reporter
+      },
    };
 
 // Gulp
@@ -83,20 +83,23 @@ URL to the W3C validator. Use if you want to use a local validator.
 ### options.proxy
 HTTP address of the proxy server if you are running behind a firewall, e.g. `http://proxy:8080`
 
+### options.showInfo
+Output informational **warning** messages as well as **error** messages.
+
 ### options.verifyMessage
 Function to determine if a warning or error should be allowed.  Return `true` to allow and `false`
 to skip.
 
-Example usage:
+Example usage of `verifyMessage` option:
 ```javascript
 // Tasks
 const task = {
-   validateHtml: () => {
+   validateHtml() {
       const ignoreDuplicateIds = (type, message) => !/^Duplicate ID/.test(message);
       return gulp.src('target/**/*.html')
-         .pipe(htmlValidator({ verifyMessage: ignoreDuplicateIds }))
+         .pipe(htmlValidator({ verifyMessage: ignoreDuplicateIds }))  //custom function
          .pipe(htmlValidator.reporter());
-      }
+      },
    };
 ```
 

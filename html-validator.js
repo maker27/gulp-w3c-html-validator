@@ -16,7 +16,7 @@ const pluginName = 'gulp-w3c-html-validator';
 // Gulp plugin
 const plugin = {
 
-   handleMessages: (file, messages, options) => {
+   handleMessages(file, messages, options) {
       // Parameters:
       //    file -     array of files to validate
       //    messages - array of messages returned by w3cjs
@@ -26,7 +26,7 @@ const plugin = {
       const text = {
          error:   color.red.bold('HTML Error:'),
          warning: color.yellow.bold('HTML Warning:'),
-         into:    color.green.bold('HTML Info:')
+         into:    color.green.bold('HTML Info:'),
          };
       const lines = file.contents.toString().split(/\r\n|\r|\n/g);
       let success = true;
@@ -82,7 +82,7 @@ const plugin = {
       return success;
       },
 
-   htmlValidator: (options) => {
+   htmlValidator(options) {
       options = options || {};
       if (typeof options.url === 'string')
          w3cjs.setW3cCheckUrl(options.url);
@@ -92,14 +92,14 @@ const plugin = {
                console.log(error);
             file.w3cjs = {
                success:  plugin.handleMessages(file, response.messages, options),
-               messages: response.messages
+               messages: response.messages,
                };
             done(null, file);
             };
          const w3cjsOptions = {
             proxy:    options.proxy,
             input:    file.contents,
-            callback: handleValidation
+            callback: handleValidation,
             };
          if (file.isNull())
             done(null, file);
@@ -111,14 +111,14 @@ const plugin = {
       return through2.obj(transform);
       },
 
-   reporter: () => {
+   reporter() {
       const transform = (file, encoding, done) => {
          done(null, file);
          if (file.w3cjs && !file.w3cjs.success)
             throw new PluginError(pluginName, 'HTML validation error(s) found');
          };
       return through2.obj(transform);
-      }
+      },
 
    };
 
