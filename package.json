@@ -1,6 +1,6 @@
 {
    "name": "gulp-w3c-html-validator",
-   "version": "1.4.4",
+   "version": "2.0.0",
    "license": "MIT",
    "description": "Gulp plugin to validate HTML using the W3C Markup Validation Service",
    "main": "html-validator.js",
@@ -47,7 +47,7 @@
       "w3cjs": "~0.4"
    },
    "devDependencies": {
-      "jshint": "~2.10",
+      "jshint": "~2.11",
       "mocha": "~7.0",
       "should": "~13.2"
    }
