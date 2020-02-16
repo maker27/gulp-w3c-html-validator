@@ -16,20 +16,15 @@ const pluginName = 'gulp-w3c-html-validator';
 // Gulp plugin
 const plugin = {
 
-   handleMessages(file, messages, options) {
+   handleMessages(file, messages) {
       // Parameters:
       //    file -     array of files to validate
       //    messages - array of messages returned by w3cjs
-      //    options -  settings object
-      // Returns:
-      //    boolean indicating success (true if no errors occurred)
       const text = {
-         error:   color.red.bold('HTML Error:'),
-         warning: color.yellow.bold('HTML Warning:'),
-         into:    color.green.bold('HTML Info:'),
+         error: color.red.bold('HTML Error:'),
+         info:  color.yellow.bold('HTML Warning:'),
          };
       const lines = file.contents.toString().split(/\r\n|\r|\n/g);
-      let success = true;
       const processMessage = (message) => {
          // Example message object:
          //    {
@@ -42,12 +37,8 @@ const plugin = {
          //       hiliteStart:  10,
          //       hiliteLength: 4
          //    }
-         if (options.verifyMessage && !options.verifyMessage(message.type, message.message))
-            return;  //skip this message
-         if (message.type === 'info' && !options.showInfo)
-            return;  //skip this message
-         success = success && message.type !== 'error';
-         const type = text[message.type] || text.warning;
+         // See: https://github.com/validator/validator/wiki/Output-»-JSON#example
+         const type = text[message.type] || color.cyan.bold('HTML Comment:');
          const line = message.lastLine || 0;
          const column = message.lastColumn || 0;
          const location = 'Line ' + line + ', Column ' + column + ':';
@@ -79,7 +70,6 @@ const plugin = {
          messages.forEach(processMessage);
       else
          log(text.warning, 'Failed to run validation on', file.relative);
-      return success;
       },
 
    htmlValidator(options) {
@@ -90,9 +80,14 @@ const plugin = {
          const handleValidation = (error, response) => {
             if (error)
                console.log(error);
+            const keep = (message) => !(options.skipWarnings && message.type === 'info') &&
+               !(options.verifyMessage && !options.verifyMessage(message.type, message.message));
+            const filteredMessages = response.messages.filter(keep);
+            plugin.handleMessages(file, filteredMessages);
             file.w3cjs = {
-               success:  plugin.handleMessages(file, response.messages, options),
-               messages: response.messages,
+               success:    filteredMessages.length === 0,
+               messages:   filteredMessages,
+               unfiltered: response.messages,
                };
             done(null, file);
             };
@@ -115,7 +110,7 @@ const plugin = {
       const transform = (file, encoding, done) => {
          done(null, file);
          if (file.w3cjs && !file.w3cjs.success)
-            throw new PluginError(pluginName, 'HTML validation error(s) found');
+            throw new PluginError(pluginName, 'HTML validation failed');
          };
       return through2.obj(transform);
       },

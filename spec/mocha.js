@@ -22,12 +22,12 @@ describe('The gulp-w3c-html-validator plugin', () => {
          contents: fs.readFileSync('spec/html/valid.html')
          };
       const mockFile = new Vinyl(vinylOptions);
-      const stream = htmlValidator({ showInfo: true });
-      const notInfoType = (message) => message.type !== 'info';
+      const stream = htmlValidator();
       const handleFileFromStream = (file) => {
          should.exist(file);
          file.w3cjs.success.should.equal(true);
-         file.w3cjs.messages.filter(notInfoType).length.should.equal(0);
+         file.w3cjs.messages.length.should.equal(0);
+         file.w3cjs.unfiltered.length.should.equal(0);
          should.exist(file.path);
          should.exist(file.relative);
          should.exist(file.contents);
@@ -45,39 +45,7 @@ describe('The gulp-w3c-html-validator plugin', () => {
       stream.end();
       });
 
-   it('reports a file with a warning', (done) => {
-      const count = { files: 0 };
-      const vinylOptions = {
-         path:     'spec/html/warning.html',
-         cwd:      'spec/',
-         base:     'spec/html/',
-         contents: fs.readFileSync('spec/html/warning.html')
-         };
-      const mockFile = new Vinyl(vinylOptions);
-      const stream = htmlValidator({ showInfo: true });
-      const notInfoType = (message) => message.type !== 'info';
-      const handleFileFromStream = (file) => {
-         should.exist(file);
-         file.w3cjs.success.should.equal(true);
-         file.w3cjs.messages.filter(notInfoType).length.should.equal(0);
-         should.exist(file.path);
-         should.exist(file.relative);
-         should.exist(file.contents);
-         file.path.should.equal('spec/html/warning.html');
-         file.relative.should.equal('warning.html');
-         count.files++;
-         };
-      const handleEndOfStream = () => {
-         count.files.should.equal(1);
-         done();
-         };
-      stream.on('data', handleFileFromStream);
-      stream.once('end', handleEndOfStream);
-      stream.write(mockFile);
-      stream.end();
-      });
-
-   it('fails an invalid file', (done) => {
+   it('reports errors and warnings for an invalid file', (done) => {
       const count = { files: 0 };
       const vinylOptions = {
          path:     'spec/html/invalid.html',
@@ -87,11 +55,12 @@ describe('The gulp-w3c-html-validator plugin', () => {
          };
       const mockFile = new Vinyl(vinylOptions);
       const stream = htmlValidator();
-      const notInfoType = (message) => message.type !== 'info';
       const handleFileFromStream = (file) => {
          should.exist(file);
          file.w3cjs.success.should.equal(false);
-         file.w3cjs.messages.filter(notInfoType).length.should.equal(2);
+         file.w3cjs.messages.filter(message => message.type === 'error').length.should.equal(1);
+         file.w3cjs.messages.filter(message => message.type === 'info').length.should.equal(1);
+         file.w3cjs.unfiltered.length.should.equal(2);
          should.exist(file.path);
          should.exist(file.relative);
          should.exist(file.contents);
@@ -103,7 +72,7 @@ describe('The gulp-w3c-html-validator plugin', () => {
          count.files.should.equal(1);
          done();
          };
-      stream.on('data',  handleFileFromStream);
+      stream.on('data', handleFileFromStream);
       stream.once('end', handleEndOfStream);
       stream.write(mockFile);
       stream.end();
@@ -123,14 +92,14 @@ describe('The verifyMessage option', () => {
          contents: fs.readFileSync('spec/html/invalid.html')
          };
       const mockFile = new Vinyl(vinylOptions);
-      const verifyMessage = (type, message) => {
-         const ignoreMessages = [/^End tag for  .body. seen/, /^Unclosed element .h1./];
-         return !ignoreMessages.map((ignore) => ignore.test(message)).includes(true);
-         };
-      const stream = htmlValidator({ verifyMessage: verifyMessage });
+      const ignore = /^Element .blockquote. not allowed as child of element/;
+      const verifyMessage = (type, message) => !ignore.test(message);
+      const stream = htmlValidator({ verifyMessage: verifyMessage, skipWarnings: true });
       const handleFileFromStream = (file) => {
          should.exist(file);
          file.w3cjs.success.should.equal(true);
+         file.w3cjs.messages.length.should.equal(0);
+         file.w3cjs.unfiltered.length.should.equal(2);
          count.files++;
          };
       const handleEndOfStream = () => {
@@ -185,7 +154,7 @@ describe('The htmlValidator.reporter() function', () => {
          };
       const stream = htmlValidator.reporter();
       const writeToStream = () => stream.write(mockFile);
-      (writeToStream).should.throw(/HTML validation error[(]s[)] found/);
+      (writeToStream).should.throw(/HTML validation failed/);
       stream.end();
       return stream;
       });

@@ -56,7 +56,7 @@ const task = {
             throw Error('HTML validation error(s) found');
          };
       return gulp.src('target/**/*.html')
-         .pipe(htmlValidator({ showInfo: true }))
+         .pipe(htmlValidator())
          .pipe(through2.obj(handleFile));  //custom reporter
       },
    };
@@ -76,19 +76,12 @@ Error: HTML validation error(s) found
 ```
 
 ## 4) Options
-
-### options.url
-URL to the W3C validator. Use if you want to use a local validator.
-
-### options.proxy
-HTTP address of the proxy server if you are running behind a firewall, e.g. `http://proxy:8080`
-
-### options.showInfo
-Output informational **warning** messages as well as **error** messages.
-
-### options.verifyMessage
-Function to determine if a warning or error should be allowed.  Return `true` to allow and `false`
-to skip.
+| Option            | Type       | Description                                                                                                 | Default |
+| ----------------- | ---------- | ----------------------------------------------------------------------------------------------------------- | ------- |
+| **proxy**         | `string`   | HTTP address of the proxy server if you are running behind a firewall, e.g. `'http://proxy:8080'`           | `null` |
+| **skipWarnings**  | `boolean`  | Do not output informational warning messages (suppress `type: 'info'`).                                     | `false` |
+| **url**           | `string`   | URL to the W3C validator.  Use if you want to use a local validator.                                        | see:&nbsp;[w3cjs](https://github.com/thomasdavis/w3cjs) |
+| **verifyMessage** | `function` | Function to determine if a warning or error should be allowed.  Return `true` to allow and `false` to skip. | null |
 
 Example usage of `verifyMessage` option:
 ```javascript
