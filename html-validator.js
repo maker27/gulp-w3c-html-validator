@@ -16,10 +16,7 @@ const pluginName = 'gulp-w3c-html-validator';
 // Gulp plugin
 const plugin = {
 
-   handleMessages(file, messages) {
-      // Parameters:
-      //    file -     array of files to validate
-      //    messages - array of messages returned by w3cjs
+   handleMessages(file) {
       const text = {
          error: color.red.bold('HTML Error:'),
          info:  color.yellow.bold('HTML Warning:'),
@@ -66,10 +63,10 @@ const plugin = {
          if (erroredLine)
             log(erroredLine);
          };
-      if (Array.isArray(messages))
-         messages.forEach(processMessage);
-      else
+      if (!file.w3cjs || !Array.isArray(file.w3cjs.messages))
          log(text.warning, 'Failed to run validation on', file.relative);
+      else
+         file.w3cjs.messages.forEach(processMessage);
       },
 
    htmlValidator(options) {
@@ -80,15 +77,15 @@ const plugin = {
          const handleValidation = (error, response) => {
             if (error)
                console.log(error);
-            const keep = (message) => !(options.skipWarnings && message.type === 'info') &&
+            const worthy = (message) => !(options.skipWarnings && message.type === 'info') &&
                !(options.verifyMessage && !options.verifyMessage(message.type, message.message));
-            const filteredMessages = response.messages.filter(keep);
-            plugin.handleMessages(file, filteredMessages);
+            const filteredMessages = response.messages.filter(worthy);
             file.w3cjs = {
                success:    filteredMessages.length === 0,
                messages:   filteredMessages,
                unfiltered: response.messages,
                };
+            plugin.handleMessages(file);
             done(null, file);
             };
          const w3cjsOptions = {
