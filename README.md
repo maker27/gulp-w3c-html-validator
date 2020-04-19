@@ -79,7 +79,7 @@ Error: HTML validation error(s) found
 | Option            | Type       | Description                                                                                                 | Default |
 | ----------------- | ---------- | ----------------------------------------------------------------------------------------------------------- | ------- |
 | **proxy**         | `string`   | HTTP address of the proxy server if you are running behind a firewall, e.g. `'http://proxy:8080'`           | `null` |
-| **skipWarnings**  | `boolean`  | Do not output informational warning messages (suppress `type: 'info'`).                                     | `false` |
+| **skipWarnings**  | `boolean`  | Suppress informational warning messages (`type: 'info'`).                                                   | `false` |
 | **url**           | `string`   | URL to the W3C validator.  Use if you want to use a local validator.                                        | see:&nbsp;[w3cjs](https://github.com/thomasdavis/w3cjs) |
 | **verifyMessage** | `function` | Function to determine if a warning or error should be allowed.  Return `true` to allow and `false` to skip. | null |
 
