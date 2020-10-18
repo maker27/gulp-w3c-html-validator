@@ -32,7 +32,7 @@ const plugin = {
          //       firstColumn:  4,
          //       lastColumn:   7,
          //       hiliteStart:  10,
-         //       hiliteLength: 4
+         //       hiliteLength: 4,
          //    }
          // See: https://github.com/validator/validator/wiki/Output-»-JSON#example
          const type = text[message.type] || color.cyan.bold('HTML Comment:');
@@ -81,7 +81,7 @@ const plugin = {
                !(options.verifyMessage && !options.verifyMessage(message.type, message.message));
             const filteredMessages = response.messages.filter(worthy);
             file.w3cjs = {
-               success:    filteredMessages.length === 0,
+               success:    !filteredMessages.length,
                messages:   filteredMessages,
                unfiltered: response.messages,
                };
