@@ -36,7 +36,7 @@
    },
    "scripts": {
       "pretest": "jshint *.js spec",
-      "test": "mocha spec"
+      "test": "mocha spec --timeout 5000"
    },
    "dependencies": {
       "ansi-colors": "~4.1",
