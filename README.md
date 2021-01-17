@@ -95,8 +95,8 @@ const task = {
    };
 ```
 
-## 5) Deprecated CommonJS (html-validator v2.0)
-If your build system is using `require()` statements for CommonJS modules, install v2.0:
+## 5) Deprecated CommonJS (gulp-w3c-html-validator v2.0)
+If your build system is using `require()` statements for CommonJS modules, install the older v2.0:
 ```shell
 $ npm install --save-dev gulp-w3c-html-validator@2.0
 ```
@@ -110,7 +110,7 @@ const htmlValidator = require('gulp-w3c-html-validator');
 const task = {
    validateHtml() {
       return gulp.src('target/**/*.html')
-         .pipe(htmlValidator())
+         .pipe(htmlValidator())  //note: v2.0 does not use analyzer()
          .pipe(htmlValidator.reporter());
       },
    };
