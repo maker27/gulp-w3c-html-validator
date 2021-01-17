@@ -6,7 +6,7 @@ _Gulp plugin to validate HTML using the W3C Markup Validation Service_
 [![License:MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/center-key/gulp-w3c-html-validator/blob/master/LICENSE.txt)
 [![npm](https://img.shields.io/npm/v/gulp-w3c-html-validator.svg)](https://www.npmjs.com/package/gulp-w3c-html-validator)
 [![Vulnerabilities](https://snyk.io/test/github/center-key/gulp-w3c-html-validator/badge.svg)](https://snyk.io/test/github/center-key/gulp-w3c-html-validator)
-[![Build](https://travis-ci.com/center-key/gulp-w3c-html-validator.svg)](https://travis-ci.com/center-key/gulp-w3c-html-validator)
+[![Build](https://travis-ci.org/center-key/gulp-w3c-html-validator.svg)](https://travis-ci.org/center-key/gulp-w3c-html-validator)
 
 This Gulp plugin is a wrapper for [w3cjs](https://github.com/thomasdavis/w3cjs) (_"A node.js library for testing files or URLs against the W3C HTML validator."_)
 
@@ -21,7 +21,7 @@ Create a task in your **gulpfile.js**:
 ```javascript
 // Imports
 import gulp from 'gulp';
-import htmlValidator from 'gulp-w3c-html-validator';
+import { htmlValidator } from 'gulp-w3c-html-validator';
 
 // Tasks
 const task = {
@@ -43,7 +43,7 @@ and `messages` (Array).
 ### Example usage
 ```javascript
 // Import
-import htmlValidator from 'gulp-w3c-html-validator';
+import { htmlValidator } from 'gulp-w3c-html-validator';
 import through2 from 'through2';
 
 // Tasks
