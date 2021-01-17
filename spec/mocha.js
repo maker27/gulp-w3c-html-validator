@@ -1,14 +1,14 @@
 // Mocha Specification Cases
 
 // Imports
-const fs =     require('fs');
-const should = require('should');
-const Vinyl =  require('vinyl');
+import { readdirSync, readFileSync } from 'fs';
+import should from 'should';
+import Vinyl from 'vinyl';
 
 // Plugin
-const htmlValidator = require('../html-validator.js');
+import { htmlValidator } from '../html-validator.js';
 console.log('  Input HTML files for validation:');
-fs.readdirSync('spec/html').forEach(file => console.log('    spec/html/' + file));
+readdirSync('spec/html').forEach(file => console.log('    spec/html/' + file));
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 describe('The gulp-w3c-html-validator plugin', () => {
@@ -19,10 +19,10 @@ describe('The gulp-w3c-html-validator plugin', () => {
          path:     'spec/html/valid.html',
          cwd:      'spec/',
          base:     'spec/html/',
-         contents: fs.readFileSync('spec/html/valid.html')
+         contents: readFileSync('spec/html/valid.html')
          };
       const mockFile = new Vinyl(vinylOptions);
-      const stream = htmlValidator();
+      const stream = htmlValidator.analyzer();
       const handleFileFromStream = (file) => {
          should.exist(file);
          file.w3cjs.success.should.equal(true);
@@ -51,10 +51,10 @@ describe('The gulp-w3c-html-validator plugin', () => {
          path:     'spec/html/invalid.html',
          cwd:      'spec/',
          base:     'spec/html/',
-         contents: fs.readFileSync('spec/html/invalid.html')
+         contents: readFileSync('spec/html/invalid.html')
          };
       const mockFile = new Vinyl(vinylOptions);
-      const stream = htmlValidator();
+      const stream = htmlValidator.analyzer();
       const handleFileFromStream = (file) => {
          should.exist(file);
          file.w3cjs.success.should.equal(false);
@@ -89,12 +89,12 @@ describe('The verifyMessage option', () => {
          path:     'spec/html/invalid.html',
          cwd:      'spec/',
          base:     'spec/html/',
-         contents: fs.readFileSync('spec/html/invalid.html')
+         contents: readFileSync('spec/html/invalid.html')
          };
       const mockFile = new Vinyl(vinylOptions);
       const ignore = /^Element .blockquote. not allowed as child of element/;
       const verifyMessage = (type, message) => !ignore.test(message);
-      const stream = htmlValidator({ verifyMessage: verifyMessage, skipWarnings: true });
+      const stream = htmlValidator.analyzer({ verifyMessage: verifyMessage, skipWarnings: true });
       const handleFileFromStream = (file) => {
          should.exist(file);
          file.w3cjs.success.should.equal(true);
@@ -131,7 +131,7 @@ describe('The htmlValidator.reporter() function', () => {
          path:     'spec/html/valid.html',
          cwd:      'spec/',
          base:     'spec/html/',
-         contents: fs.readFileSync('spec/html/valid.html')
+         contents: readFileSync('spec/html/valid.html')
          };
       const mockFile = new Vinyl(vinylOptions);
       const stream = htmlValidator.reporter();
@@ -145,7 +145,7 @@ describe('The htmlValidator.reporter() function', () => {
          path:     'spec/html/invalid.html',
          cwd:      'spec/',
          base:     'spec/html/',
-         contents: fs.readFileSync('spec/html/invalid.html')
+         contents: readFileSync('spec/html/invalid.html')
          };
       const mockFile = new Vinyl(vinylOptions);
       mockFile.w3cjs = {
@@ -154,7 +154,7 @@ describe('The htmlValidator.reporter() function', () => {
          };
       const stream = htmlValidator.reporter();
       const writeToStream = () => stream.write(mockFile);
-      (writeToStream).should.throw(/HTML validation failed/);
+      writeToStream.should.throw(/HTML validation failed/);
       stream.end();
       return stream;
       });

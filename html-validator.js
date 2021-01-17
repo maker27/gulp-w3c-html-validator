@@ -4,17 +4,19 @@
 // MIT License
 
 // Imports
-const color =       require('ansi-colors');
-const PluginError = require('plugin-error');
-const log =         require('fancy-log');
-const through2 =    require('through2');
-const w3cjs =       require('w3cjs');
+import color from       'ansi-colors';
+import PluginError from 'plugin-error';
+import log from         'fancy-log';
+import through2 from    'through2';
+import w3cjs from       'w3cjs';
 
 // Setup
 const pluginName = 'gulp-w3c-html-validator';
 
 // Gulp plugin
-const plugin = {
+const htmlValidator = {
+
+   setW3cCheckUrl: w3cjs.setW3cCheckUrl,
 
    handleMessages(file) {
       const text = {
@@ -69,10 +71,10 @@ const plugin = {
          file.w3cjs.messages.forEach(processMessage);
       },
 
-   htmlValidator(options) {
+   analyzer(options) {
       options = options || {};
       if (typeof options.url === 'string')
-         w3cjs.setW3cCheckUrl(options.url);
+         htmlValidator.setW3cCheckUrl(options.url);
       const transform = (file, encoding, done) => {
          const handleValidation = (error, response) => {
             if (error)
@@ -85,7 +87,7 @@ const plugin = {
                messages:   filteredMessages,
                unfiltered: response.messages,
                };
-            plugin.handleMessages(file);
+            htmlValidator.handleMessages(file);
             done(null, file);
             };
          const w3cjsOptions = {
@@ -114,7 +116,4 @@ const plugin = {
 
    };
 
-// Module loading
-module.exports = plugin.htmlValidator;
-module.exports.reporter = plugin.reporter;
-module.exports.setW3cCheckUrl = w3cjs.setW3cCheckUrl;
+export { htmlValidator };

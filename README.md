@@ -20,14 +20,14 @@ $ npm install --save-dev gulp-w3c-html-validator
 Create a task in your **gulpfile.js**:
 ```javascript
 // Imports
-const gulp =          require('gulp');
-const htmlValidator = require('gulp-w3c-html-validator');
+import gulp from 'gulp';
+import htmlValidator from 'gulp-w3c-html-validator';
 
 // Tasks
 const task = {
    validateHtml() {
       return gulp.src('target/**/*.html')
-         .pipe(htmlValidator())
+         .pipe(htmlValidator.analyzer())
          .pipe(htmlValidator.reporter());
       },
    };
@@ -43,8 +43,8 @@ and `messages` (Array).
 ### Example usage
 ```javascript
 // Import
-const htmlValidator = require('gulp-w3c-html-validator');
-const through2 =      require('through2');
+import htmlValidator from 'gulp-w3c-html-validator';
+import through2 from 'through2';
 
 // Tasks
 const task = {
@@ -55,7 +55,7 @@ const task = {
             throw Error('HTML validation error(s) found');
          };
       return gulp.src('target/**/*.html')
-         .pipe(htmlValidator())
+         .pipe(htmlValidator.analyzer())
          .pipe(through2.obj(handleFile));  //custom reporter
       },
    };
@@ -89,7 +89,7 @@ const task = {
    validateHtml() {
       const ignoreDuplicateIds = (type, message) => !/^Duplicate ID/.test(message);
       return gulp.src('target/**/*.html')
-         .pipe(htmlValidator({ verifyMessage: ignoreDuplicateIds }))  //custom function
+         .pipe(htmlValidator.analyzer({ verifyMessage: ignoreDuplicateIds }))  //custom function
          .pipe(htmlValidator.reporter());
       },
    };
