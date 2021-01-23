@@ -19,6 +19,7 @@
    "keywords": [
       "gulp",
       "gulp-plugin",
+      "gulp-w3c-html-validator",
       "html",
       "html5",
       "html-validator",
