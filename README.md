@@ -103,8 +103,8 @@ $ npm install --save-dev gulp-w3c-html-validator@2.0
 Create a task in your **gulpfile.js**:
 ```javascript
 // Imports
-const gulp =          require('gulp');
-const htmlValidator = require('gulp-w3c-html-validator');
+import gulp from 'gulp';
+import { htmlValidator } from 'gulp-w3c-html-validator';
 
 // Tasks
 const task = {
