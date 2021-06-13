@@ -25,9 +25,9 @@ describe('The gulp-w3c-html-validator plugin', () => {
       const stream = htmlValidator.analyzer();
       const handleFileFromStream = (file) => {
          should.exist(file);
-         file.w3cjs.success.should.equal(true);
-         file.w3cjs.messages.length.should.equal(0);
-         file.w3cjs.unfiltered.length.should.equal(0);
+         file.validationResults.success.should.equal(true);
+         file.validationResults.messages.length.should.equal(0);
+         file.validationResults.unfiltered.length.should.equal(0);
          should.exist(file.path);
          should.exist(file.relative);
          should.exist(file.contents);
@@ -57,10 +57,10 @@ describe('The gulp-w3c-html-validator plugin', () => {
       const stream = htmlValidator.analyzer();
       const handleFileFromStream = (file) => {
          should.exist(file);
-         file.w3cjs.success.should.equal(false);
-         file.w3cjs.messages.filter(message => message.type === 'error').length.should.equal(1);
-         file.w3cjs.messages.filter(message => message.type === 'info').length.should.equal(1);
-         file.w3cjs.unfiltered.length.should.equal(2);
+         file.validationResults.success.should.equal(false);
+         file.validationResults.messages.filter(message => message.type === 'error').length.should.equal(1);
+         file.validationResults.messages.filter(message => message.type === 'info').length.should.equal(1);
+         file.validationResults.unfiltered.length.should.equal(2);
          should.exist(file.path);
          should.exist(file.relative);
          should.exist(file.contents);
@@ -97,9 +97,9 @@ describe('The verifyMessage option', () => {
       const stream = htmlValidator.analyzer({ verifyMessage: verifyMessage, skipWarnings: true });
       const handleFileFromStream = (file) => {
          should.exist(file);
-         file.w3cjs.success.should.equal(true);
-         file.w3cjs.messages.length.should.equal(0);
-         file.w3cjs.unfiltered.length.should.equal(2);
+         file.validationResults.success.should.equal(true);
+         file.validationResults.messages.length.should.equal(0);
+         file.validationResults.unfiltered.length.should.equal(2);
          count.files++;
          };
       const handleEndOfStream = () => {
@@ -110,15 +110,6 @@ describe('The verifyMessage option', () => {
       stream.once('end', handleEndOfStream);
       stream.write(mockFile);
       stream.end();
-      });
-
-   });
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-describe('The htmlValidator.setW3cCheckUrl() function', () => {
-
-   it('sets a new URL to checkUrl', () => {
-      htmlValidator.setW3cCheckUrl('http://localhost');
       });
 
    });
@@ -148,7 +139,7 @@ describe('The htmlValidator.reporter() function', () => {
          contents: readFileSync('spec/html/invalid.html')
          };
       const mockFile = new Vinyl(vinylOptions);
-      mockFile.w3cjs = {
+      mockFile.validationResults = {
          success:  false,
          messages: ['HTML is valid']
          };

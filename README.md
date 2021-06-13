@@ -8,7 +8,7 @@ _Gulp plugin to validate HTML using the W3C Markup Validation Service_
 [![Vulnerabilities](https://snyk.io/test/github/center-key/gulp-w3c-html-validator/badge.svg)](https://snyk.io/test/github/center-key/gulp-w3c-html-validator)
 [![Build](https://travis-ci.org/center-key/gulp-w3c-html-validator.svg)](https://travis-ci.org/center-key/gulp-w3c-html-validator)
 
-This Gulp plugin is a wrapper for [w3cjs](https://github.com/thomasdavis/w3cjs) (_"A node.js library for testing files or URLs against the W3C HTML validator."_)
+This Gulp plugin is a wrapper for [w3c-html-validator](https://github.com/center-key/w3c-html-validator) (_"A package for testing HTML files or URLs against the W3C validator"_)
 
 ## 1) Setup
 Install module into your project:
@@ -37,7 +37,7 @@ gulp.task('validate-html', task.validateHtml);
 ```
 
 ## 3) Custom Reporting
-The results are also added onto each file object under `w3cjs`, containing `success` (boolean)
+The results are also added onto each file object under `validationResults`, containing `success` (boolean)
 and `messages` (Array).
 
 ### Example usage
@@ -51,7 +51,7 @@ const task = {
    validateHtml() {
       const handleFile = (file, encoding, callback) => {
          callback(null, file);
-         if (!file.w3cjs.success)
+         if (!file.validationResults.success)
             throw Error('HTML validation error(s) found');
          };
       return gulp.src('target/**/*.html')
@@ -79,8 +79,8 @@ Error: HTML validation error(s) found
 | ----------------- | ---------- | ----------------------------------------------------------------------------------------------------------- | ------- |
 | **proxy**         | `string`   | HTTP address of the proxy server if you are running behind a firewall, e.g. `'http://proxy:8080'`           | `null` |
 | **skipWarnings**  | `boolean`  | Suppress informational warning messages (`type: 'info'`).                                                   | `false` |
-| **url**           | `string`   | URL to the W3C validator.  Use if you want to use a local validator.                                        | see:&nbsp;[w3cjs](https://github.com/thomasdavis/w3cjs) |
-| **verifyMessage** | `function` | Function to determine if a warning or error should be allowed.  Return `true` to allow and `false` to skip. | null |
+| **url**           | `string`   | URL to the W3C validator.  Use if you want to use a local validator.                                        | see:&nbsp;[w3c-html-validator](https://github.com/center-key/w3c-html-validator) |
+| **verifyMessage** | `function` | Function to determine if a warning or error should be allowed.  Return `true` to allow and `false` to skip. | `null` |
 
 Example usage of `verifyMessage` option:
 ```javascript

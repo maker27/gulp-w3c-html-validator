@@ -4,19 +4,17 @@
 // MIT License
 
 // Imports
-import color from       'ansi-colors';
+import color from 'ansi-colors';
 import PluginError from 'plugin-error';
-import log from         'fancy-log';
-import through2 from    'through2';
-import w3cjs from       'w3cjs';
+import log from 'fancy-log';
+import through2 from 'through2';
+import { w3cHtmlValidator } from 'w3c-html-validator';
 
 // Setup
 const pluginName = 'gulp-w3c-html-validator';
 
 // Gulp plugin
 const htmlValidator = {
-
-   setW3cCheckUrl: w3cjs.setW3cCheckUrl,
 
    handleMessages(file) {
       const text = {
@@ -65,42 +63,39 @@ const htmlValidator = {
          if (erroredLine)
             log(erroredLine);
          };
-      if (!file.w3cjs || !Array.isArray(file.w3cjs.messages))
+      if (!file.validationResults || !Array.isArray(file.validationResults.messages))
          log(text.warning, 'Failed to run validation on', file.relative);
       else
-         file.w3cjs.messages.forEach(processMessage);
+         file.validationResults.messages.forEach(processMessage);
       },
 
    analyzer(options) {
-      options = options || {};
-      if (typeof options.url === 'string')
-         htmlValidator.setW3cCheckUrl(options.url);
+      const defaults = { proxy: null, skipWarnings: false, url: null, verifyMessage: null };
+      const settings = { ...defaults, ...options };
+      if (settings.proxy)
+         throw Error('The "proxy" option is not supported at this time.');
       const transform = (file, encoding, done) => {
-         const handleValidation = (error, response) => {
-            if (error)
-               console.log(error);
-            const worthy = (message) => !(options.skipWarnings && message.type === 'info') &&
-               !(options.verifyMessage && !options.verifyMessage(message.type, message.message));
-            const filteredMessages = response.messages.filter(worthy);
-            file.w3cjs = {
+         const handleValidation = (results) => {
+            const worthy = (message) => !(settings.skipWarnings && message.type === 'info') &&
+               !(settings.verifyMessage && !settings.verifyMessage(message.type, message.message));
+            const filteredMessages = results.messages.filter(worthy);
+            file.validationResults = {
                success:    !filteredMessages.length,
                messages:   filteredMessages,
-               unfiltered: response.messages,
+               unfiltered: results.messages,
                };
             htmlValidator.handleMessages(file);
             done(null, file);
             };
-         const w3cjsOptions = {
-            proxy:    options.proxy,
-            input:    file.contents,
-            callback: handleValidation,
-            };
+         const validatorOptions = { html: file.contents };
+         if (typeof settings.url === 'string')
+            validatorOptions.checkUrl = settings.url;
          if (file.isNull())
             done(null, file);
          else if (file.isStream())
             done(new PluginError(pluginName, 'Streaming not supported'));
          else
-            w3cjs.validate(w3cjsOptions);
+            w3cHtmlValidator.validate({ html: file.contents }).then(handleValidation);
          };
       return through2.obj(transform);
       },
@@ -108,7 +103,7 @@ const htmlValidator = {
    reporter() {
       const transform = (file, encoding, done) => {
          done(null, file);
-         if (file.w3cjs && !file.w3cjs.success)
+         if (file.validationResults && !file.validationResults.success)
             throw new PluginError(pluginName, 'HTML validation failed');
          };
       return through2.obj(transform);
