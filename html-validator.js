@@ -100,10 +100,12 @@ const htmlValidator = {
       return through2.obj(transform);
       },
 
-   reporter() {
+   reporter(options) {
+      const defaults = { throwErrors: false };
+      const settings = { ...defaults, ...options };
       const transform = (file, encoding, done) => {
          done(null, file);
-         if (file.validationResults && !file.validationResults.success)
+         if (settings.throwErrors && file.validationResults && !file.validationResults.success)
             throw new PluginError(pluginName, 'HTML validation failed');
          };
       return through2.obj(transform);

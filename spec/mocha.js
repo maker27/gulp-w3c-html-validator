@@ -143,7 +143,7 @@ describe('The htmlValidator.reporter() function', () => {
          success:  false,
          messages: ['HTML is valid']
          };
-      const stream = htmlValidator.reporter();
+      const stream = htmlValidator.reporter({ throwErrors: true });
       const writeToStream = () => stream.write(mockFile);
       writeToStream.should.throw(/HTML validation failed/);
       stream.end();

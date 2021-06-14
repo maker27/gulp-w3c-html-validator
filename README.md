@@ -75,6 +75,7 @@ Error: HTML validation error(s) found
 ```
 
 ## 4) Options
+### analyzer()
 | Option            | Type       | Description                                                                                                 | Default |
 | ----------------- | ---------- | ----------------------------------------------------------------------------------------------------------- | ------- |
 | **proxy**         | `string`   | HTTP address of the proxy server if you are running behind a firewall, e.g. `'http://proxy:8080'`           | `null` |
@@ -94,6 +95,11 @@ const task = {
       },
    };
 ```
+
+### reporter()
+| Option          | Type      | Description                                                                           | Default |
+| --------------- | --------- | ------------------------------------------------------------------------------------- | ------- |
+| **throwErrors** | `boolean` | Throw an [error](https://github.com/gulpjs/plugin-error) on HTTP validation failure.  | `false` |
 
 ## 5) Deprecated CommonJS (gulp-w3c-html-validator v2.0)
 If your build system is using `require()` statements for CommonJS modules, install the older v2.0:
