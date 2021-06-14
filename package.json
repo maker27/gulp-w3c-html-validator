@@ -1,6 +1,6 @@
 {
    "name": "gulp-w3c-html-validator",
-   "version": "3.1.0",
+   "version": "3.2.0",
    "description": "Gulp plugin to validate HTML using the W3C Markup Validation Service",
    "license": "MIT",
    "type": "module",

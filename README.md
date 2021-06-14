@@ -36,7 +36,7 @@ const task = {
 gulp.task('validate-html', task.validateHtml);
 ```
 
-## 3) Custom Reporting
+## 3) Custom reporting
 The results are also added onto each file object under `validationResults`, containing `success` (boolean)
 and `messages` (Array).
 
