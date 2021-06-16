@@ -6,7 +6,7 @@ _Gulp plugin to validate HTML using the W3C Markup Validation Service_
 [![License:MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/center-key/gulp-w3c-html-validator/blob/main/LICENSE.txt)
 [![npm](https://img.shields.io/npm/v/gulp-w3c-html-validator.svg)](https://www.npmjs.com/package/gulp-w3c-html-validator)
 [![Vulnerabilities](https://snyk.io/test/github/center-key/gulp-w3c-html-validator/badge.svg)](https://snyk.io/test/github/center-key/gulp-w3c-html-validator)
-[![Build](https://travis-ci.org/center-key/gulp-w3c-html-validator.svg)](https://travis-ci.org/center-key/gulp-w3c-html-validator)
+[![Build](https://github.com/center-key/gulp-w3c-html-validator/workflows/build/badge.svg)](https://github.com/center-key/gulp-w3c-html-validator/actions?query=workflow%3Abuild)
 
 This Gulp plugin is a wrapper for [w3c-html-validator](https://github.com/center-key/w3c-html-validator) (_"A package for testing HTML files or URLs against the W3C validator"_)
 
