@@ -10,8 +10,7 @@ _Gulp plugin to validate HTML using the W3C Markup Validation Service_
 
 This Gulp plugin is a wrapper for [w3c-html-validator](https://github.com/center-key/w3c-html-validator) (_"A package for testing HTML files or URLs against the W3C validator"_)
 
-<img src=https://raw.githubusercontent.com/center-key/gulp-w3c-html-validator/main/screenshot.png
-   width=600 alt=screenshot>
+<img src=https://raw.githubusercontent.com/center-key/gulp-w3c-html-validator/main/screenshot.png alt=screenshot>
 
 ## 1) Setup
 Install module into your project:
