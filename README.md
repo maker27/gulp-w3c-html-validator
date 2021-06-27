@@ -36,9 +36,38 @@ const task = {
 gulp.task('validate-html', task.validateHtml);
 ```
 
-## 3) Custom Reporting
-The results are also added onto each file object under `validationResults`, containing `success` (boolean)
-and `messages` (Array).
+## 3) Options
+### analyzer()
+| Name (key)       | Type                    | Default                          | Description                                                          |
+| :--------------- | :---------------------- | :------------------------------- | :------------------------------------------------------------------- |
+| `checkUrl`       | **string**              | `'https://validator.w3.org/nu/'` | W3C validation API endpoint.                                         |
+| `ignoreLevel`    | `'info'` or `'warning'` | `null`                           | Skip unwanted messages.*                                             |
+| `ignoreMessages` | **string** or **regex** | `null`                           | Skip messages containing a string or matching a regular expression.* |
+
+*The `ignoreMessages` and `ignoreLevel` options only work for `'json'` output.&nbsp;
+Option value `'warning'` also skips `'info'`.
+
+Example usage of `verifyMessage` option:
+```javascript
+// Tasks
+const task = {
+   validateHtml() {
+      return gulp.src('target/**/*.html')
+         .pipe(htmlValidator.analyzer({ ignoreMessages: /^Duplicate ID/ }))
+         .pipe(htmlValidator.reporter());
+      },
+   };
+```
+
+### reporter()
+| Name (key)      | Type        | Default | Description                                                                           |
+| --------------- | ----------- | --------| ------------------------------------------------------------------------------------- |
+| `maxMessageLen` | **number**  | `null`  | Trim validation messages to not exceed a maximum length.                              |
+| `throwErrors`   | **boolean** | `false` | Throw an [error](https://github.com/gulpjs/plugin-error) for HTTP validation failure. |
+
+## 4) Custom Reporting
+The `analyzer()` adds the validation results onto each file object in the `w3cHtmlValidator` field,
+which contains a `validates` (**boolean**) field and a `messages` (**array**) field.
 
 ### Example usage
 ```javascript
@@ -51,8 +80,8 @@ const task = {
    validateHtml() {
       const handleFile = (file, encoding, callback) => {
          callback(null, file);
-         if (!file.validationResults.success)
-            throw Error('HTML validation error(s) found');
+         if (!file.w3cHtmlValidator.validates)
+            throw Error('HTML failed validation');
          };
       return gulp.src('target/**/*.html')
          .pipe(htmlValidator.analyzer())
@@ -63,43 +92,6 @@ const task = {
 // Gulp
 gulp.task('validate-html', task.validateHtml);
 ```
-
-### Example output
-```shell
-HTML Error: index.html Line 5, Column 19: Element title must not be empty.
-   <title></title>
-.../gulpfile.js:11
-         throw Error('HTML validation error(s) found');
-               ^
-Error: HTML validation error(s) found
-```
-
-## 4) Options
-### analyzer()
-| Option            | Type       | Description                                                                                                 | Default |
-| ----------------- | ---------- | ----------------------------------------------------------------------------------------------------------- | ------- |
-| **proxy**         | `string`   | HTTP address of the proxy server if you are running behind a firewall, e.g. `'http://proxy:8080'`           | `null` |
-| **skipWarnings**  | `boolean`  | Suppress informational warning messages (`type: 'info'`).                                                   | `false` |
-| **url**           | `string`   | URL to the W3C validator.  Use if you want to use a local validator.                                        | see:&nbsp;[w3c-html-validator](https://github.com/center-key/w3c-html-validator) |
-| **verifyMessage** | `function` | Function to determine if a warning or error should be allowed.  Return `true` to allow and `false` to skip. | `null` |
-
-Example usage of `verifyMessage` option:
-```javascript
-// Tasks
-const task = {
-   validateHtml() {
-      const ignoreDuplicateIds = (type, message) => !/^Duplicate ID/.test(message);
-      return gulp.src('target/**/*.html')
-         .pipe(htmlValidator.analyzer({ verifyMessage: ignoreDuplicateIds }))  //custom function
-         .pipe(htmlValidator.reporter());
-      },
-   };
-```
-
-### reporter()
-| Option          | Type      | Description                                                                           | Default |
-| --------------- | --------- | ------------------------------------------------------------------------------------- | ------- |
-| **throwErrors** | `boolean` | Throw an [error](https://github.com/gulpjs/plugin-error) on HTTP validation failure.  | `false` |
 
 ## 5) Deprecated CommonJS (gulp-w3c-html-validator v2.0)
 If your build system is using `require()` statements for CommonJS modules, install the older v2.0:

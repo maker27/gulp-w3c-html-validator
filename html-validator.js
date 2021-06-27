@@ -4,9 +4,7 @@
 // MIT License
 
 // Imports
-import color from 'ansi-colors';
 import PluginError from 'plugin-error';
-import log from 'fancy-log';
 import through2 from 'through2';
 import { w3cHtmlValidator } from 'w3c-html-validator';
 
@@ -16,99 +14,35 @@ const pluginName = 'gulp-w3c-html-validator';
 // Gulp plugin
 const htmlValidator = {
 
-   handleMessages(file) {
-      const text = {
-         error: color.red.bold('HTML Error:'),
-         info:  color.yellow.bold('HTML Warning:'),
-         };
-      const lines = file.contents.toString().split(/\r\n|\r|\n/g);
-      const processMessage = (message) => {
-         // Example message object:
-         //    {
-         //       type:         'error',
-         //       message:      'Unclosed element “h1”.',
-         //       extract:      '<body>\n   <h1>Specif',
-         //       lastLine:     8,
-         //       firstColumn:  4,
-         //       lastColumn:   7,
-         //       hiliteStart:  10,
-         //       hiliteLength: 4,
-         //    }
-         // See: https://github.com/validator/validator/wiki/Output-»-JSON#example
-         const type = text[message.type] || color.cyan.bold('HTML Comment:');
-         const line = message.lastLine || 0;
-         const column = message.lastColumn || 0;
-         const location = 'Line ' + line + ', Column ' + column + ':';
-         let erroredLine = lines[line - 1];
-         let errorColumn = message.lastColumn;
-         const trimErrorLength = () => {
-            erroredLine = erroredLine.slice(errorColumn - 50);
-            errorColumn = 50;
-            };
-         const formatErroredLine = () => {
-            if (errorColumn > 60)
-               trimErrorLength();
-            erroredLine = erroredLine.slice(0, 60);  //trim after so the line is not too long
-            erroredLine =  //highlight character with error
-               color.gray(erroredLine.substring(0, errorColumn - 1)) +
-               color.red.bold(erroredLine[errorColumn - 1]) +
-               color.gray(erroredLine.substring(errorColumn));
-            };
-         if (erroredLine)  //if false, stream was changed since validation
-            formatErroredLine();
-         if (typeof message.lastLine !== 'undefined' || typeof lastColumn !== 'undefined')
-            log(type, file.relative, location, message.message);
-         else
-            log(type, file.relative, message.message);
-         if (erroredLine)
-            log(erroredLine);
-         };
-      if (!file.validationResults || !Array.isArray(file.validationResults.messages))
-         log(text.warning, 'Failed to run validation on', file.relative);
-      else
-         file.validationResults.messages.forEach(processMessage);
-      },
-
    analyzer(options) {
-      const defaults = { proxy: null, skipWarnings: false, url: null, verifyMessage: null };
-      const settings = { ...defaults, ...options };
-      if (settings.proxy)
-         throw Error('The "proxy" option is not supported at this time.');
-      const transform = (file, encoding, done) => {
+      const validate = (file, encoding, done) => {
          const handleValidation = (results) => {
-            const worthy = (message) => !(settings.skipWarnings && message.type === 'info') &&
-               !(settings.verifyMessage && !settings.verifyMessage(message.type, message.message));
-            const filteredMessages = results.messages.filter(worthy);
-            file.validationResults = {
-               success:    !filteredMessages.length,
-               messages:   filteredMessages,
-               unfiltered: results.messages,
-               };
-            htmlValidator.handleMessages(file);
+            file.w3cHtmlValidator = results;
             done(null, file);
             };
-         const validatorOptions = { html: file.contents };
-         if (typeof settings.url === 'string')
-            validatorOptions.checkUrl = settings.url;
+         const validatorOptions = { ...options, ...{ html: file.contents.toString() } };
          if (file.isNull())
             done(null, file);
          else if (file.isStream())
             done(new PluginError(pluginName, 'Streaming not supported'));
          else
-            w3cHtmlValidator.validate({ html: file.contents }).then(handleValidation);
+            w3cHtmlValidator.validate(validatorOptions).then(handleValidation);
          };
-      return through2.obj(transform);
+      return through2.obj(validate);
       },
 
    reporter(options) {
-      const defaults = { throwErrors: false };
+      const defaults = { maxMessageLen: null, throwErrors: false };
       const settings = { ...defaults, ...options };
-      const transform = (file, encoding, done) => {
+      const report = (file, encoding, done) => {
+         const options = { title: file.path, maxMessageLen: settings.maxMessageLen };
+         if (file.w3cHtmlValidator)
+            w3cHtmlValidator.reporter(file.w3cHtmlValidator, options);
          done(null, file);
-         if (settings.throwErrors && file.validationResults && !file.validationResults.success)
+         if (settings.throwErrors && file.w3cHtmlValidator && !file.w3cHtmlValidator.validates)
             throw new PluginError(pluginName, 'HTML validation failed');
          };
-      return through2.obj(transform);
+      return through2.obj(report);
       },
 
    };
