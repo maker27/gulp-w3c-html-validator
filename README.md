@@ -47,7 +47,7 @@ gulp.task('validate-html', task.validateHtml);
 *The `ignoreMessages` and `ignoreLevel` options only work for `'json'` output.&nbsp;
 Option value `'warning'` also skips `'info'`.
 
-Example usage of `verifyMessage` option:
+Example usage of `ignoreMessages` option:
 ```javascript
 // Tasks
 const task = {

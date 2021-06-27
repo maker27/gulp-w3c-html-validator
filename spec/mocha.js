@@ -167,6 +167,7 @@ describe('The gulp-w3c-html-validator reporter()', () => {
       const files = [];
       const handleEndOfStream = () => {
          // To view raw output: console.log(spy.secondCall.args);
+         spy.restore();
          const headerLine =  /spec\/html\/valid.html.*validation:.*fail \(messages: 2\)/;
          const warningLine = /HTML warning:/;
          const errorLine =   /HTML error:/;
