@@ -156,10 +156,10 @@ describe('The gulp-w3c-html-validator reporter()', () => {
    it('displays validation messages for an invalid HTML file', (done) => {
       const spy = sinon.spy(process.stdout, 'write');
       const vinylOptions = {
-         path:     'spec/html/valid.html',
+         path:     'spec/html/invalid.html',
          cwd:      'spec/',
          base:     'spec/html/',
-         contents: readFileSync('spec/html/valid.html'),
+         contents: readFileSync('spec/html/invalid.html'),
          w3cHtmlValidator: analyzedFiles.invalid[0].w3cHtmlValidator,
          };
       const mockFile = new Vinyl(vinylOptions);
@@ -168,7 +168,7 @@ describe('The gulp-w3c-html-validator reporter()', () => {
       const handleEndOfStream = () => {
          // To view raw output: console.log(spy.secondCall.args);
          spy.restore();
-         const headerLine =  /spec\/html\/valid.html.*validation:.*fail \(messages: 2\)/;
+         const headerLine =  /spec\/html\/invalid.html.*validation:.*fail \(messages: 2\)/;
          const warningLine = /HTML warning:/;
          const errorLine =   /HTML error:/;
          const actual = {
@@ -182,7 +182,7 @@ describe('The gulp-w3c-html-validator reporter()', () => {
             };
          const expected = {
             files:     1,
-            path:      'spec/html/valid.html',
+            path:      'spec/html/invalid.html',
             lines: {
                header:  true,
                warning: true,
