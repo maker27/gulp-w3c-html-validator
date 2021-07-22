@@ -37,7 +37,7 @@
       "mocha": true
    },
    "scripts": {
-      "pretest": "jshint *.js spec",
+      "pretest": "jshint . --exclude node_modules,build,dist",
       "test": "mocha spec --timeout 5000"
    },
    "dependencies": {
