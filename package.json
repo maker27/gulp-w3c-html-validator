@@ -4,7 +4,12 @@
    "description": "Gulp plugin to validate HTML using the W3C Markup Validation Service",
    "license": "MIT",
    "type": "module",
-   "main": "html-validator.js",
+   "main": "html-validator.cjs",
+   "module": "html-validator.js",
+   "exports": {
+      "import": "./html-validator.js",
+      "require": "./html-validator.cjs"
+   },
    "repository": "github:center-key/gulp-w3c-html-validator",
    "homepage": "https://github.com/center-key/gulp-w3c-html-validator",
    "bugs": "https://github.com/center-key/gulp-w3c-html-validator/issues",
